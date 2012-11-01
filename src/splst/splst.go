@@ -1,12 +1,10 @@
 package main
 
 import (
-	"github.com/bmizerany/noeq.go"
 	"github.com/gorilla/mux"
 
 	"flag"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -29,7 +27,6 @@ var (
 	}
 	docRoot    string
 	splstsRoot string
-	nq         *noeq.Client
 )
 
 func main() {
@@ -38,14 +35,6 @@ func main() {
 
 	flag.Usage = Usage
 	flag.Parse()
-
-	var err error
-
-	nq, err = noeq.New("", "localhost:4444")
-
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	docRoot = path.Join(*flagDocRoot, "templates")
 	splstsRoot = *flagGadgtsRoot

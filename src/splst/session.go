@@ -1,17 +1,24 @@
 package main
 
 import (
-	"splst/user"
 	"github.com/gorilla/sessions"
 
+	"crypto/rand"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
-	"time"
 )
 
 var (
 	store = sessions.NewCookieStore([]byte("something-very-secret"))
 )
+
+func id() string {
+	buf := make([]byte, 16)
+	io.ReadFull(rand.Reader, buf)
+	return fmt.Sprintf("%x", buf)
+}
 
 func genSession(w http.ResponseWriter, r *http.Request) (*sessions.Session, error) {
 	// Create a splst session and store it in cookie so that we can recognize the user when he/she gets back
@@ -27,40 +34,13 @@ func genSession(w http.ResponseWriter, r *http.Request) (*sessions.Session, erro
 	}
 
 	// Generate new userid if there isn't any
-	var userid uint64
-	uid, ok := s.Values["userid"]
-	if !ok || uid == 0 {
-		var err error
-		userid, err = nq.GenOne()
-		if err != nil {
-			return nil, err
-		}
-
+	userid, ok := s.Values["userid"]
+	if !ok {
+		userid = id()
 		s.Values["userid"] = userid
-
-		user := user.New(userid)
-		err = user.Save()
-		if err != nil {
-			return nil, err
-		}
-
-	} else {
-		userid = uid.(uint64)
 	}
 
-	user := user.New(userid)
-	err = user.Fetch()
-	if err != nil {
-		return nil, err
-	}
-
-	user.LastAccess = time.Now()
-	err = user.Update()
-	if err != nil {
-		return nil, err
-	}
-
-	log.Printf("%+v", user)
+	log.Printf("%+v", userid)
 
 	// Saving session everytime it gets access helps to push expiry date further
 	s.Save(r, w)

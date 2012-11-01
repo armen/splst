@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    {{template "head"}}
+    <body>
+        <div class="container">
+            <div class="row">
+                {{template "header"}}
+            </div>
+            <div class="row">
+                <ul id="to-upload-splsts" class="thumbnails" style="position: relative;"></ul>
+            </div>
+        </div>
+        <script src="static/js/min/jquery-1.7.2.min.js"></script>
+        <script src="static/js/min/load-image.min.js"></script>
+        <script type="text/javascript" src="static/js/min/jquery.wookmark.min.js"></script>
+        <script type="text/javascript">
+            $(function() {
+                $('#to-upload-splsts li').wookmark({container: $('#to-upload-splsts'), autoResize: true});
+            });
+        </script>
+    </body>
+</html>

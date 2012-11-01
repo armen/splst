@@ -7,23 +7,23 @@
                 {{template "header"}}
             </div>
             <div class="row">
-                <div id="add-form" style="display:none;">
-                    <form class="form-horizontal">
+                <div id="add-project-container" style="display:none;">
+                    <form class="form-horizontal" id="add-project">
                         <div class="control-group">
                             <label class="control-label" for="project-name">Project Name</label>
                             <div class="controls">
-                                <input type="text" id="project-name" placeholder="Project Name">
+                                <input type="text" name="project-name" id="project-name" placeholder="Project Name">
                             </div>
                         </div>
                         <div class="control-group">
                             <label class="control-label" for="project-url">Project URL</label>
                             <div class="controls">
-                                <input type="url" id="project-url" placeholder="Project URL">
+                                <input type="url" name="project-url" id="project-url" placeholder="Project URL">
                                 <span class="help-inline">Must be a fully qualified URL that includes <b>http://</b> or <b>https://</b></span>
                             </div>
                         </div>
                         <div class="controls">
-                            <button type="submit" class="btn btn-success">Add</button>
+                            <button type="submit" class="btn btn-success" id="add">Add</button>
                             <button type="button" class="btn add-project">Cancel</button>
                         </div>
                     </form>
@@ -42,12 +42,20 @@
 
             $(function() {
                 $('.add-project').click(function() {
-                    if ($('#add-form').is(':hidden')) {
-                        $('#add-form').slideDown('fast');
+                    if ($('#add-project-container').is(':hidden')) {
+                        $('#add-project-container').slideDown('fast');
                         $('#project-name').focus();
                     } else {
-                        $('#add-form').slideUp('fast');
+                        $('#add-project-container').slideUp('fast');
                     }
+                });
+
+                $('#add-project').submit(function() {
+                    $.post('add-project', $(this).serializeArray(), function(result) {
+                        // check the result
+                    });
+
+                    return false;
                 });
             });
         </script>

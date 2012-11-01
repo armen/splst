@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 
@@ -39,4 +40,15 @@ func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 	err := templates.ExecuteTemplate(w, "home.html", vars)
 
 	return err
+}
+
+func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
+
+    log.Println(r.FormValue("project-name"))
+    log.Println(r.FormValue("project-url"))
+
+    v, _ := json.Marshal(nil)
+    w.Write(v)
+
+	return nil
 }

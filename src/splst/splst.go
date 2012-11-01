@@ -54,6 +54,7 @@ func main() {
 	r := mux.NewRouter()
 	r.Handle("/", splstHandler(homeHandler)).Methods("GET")
 	r.Handle("/{key}", splstHandler(homeHandler)).Methods("GET")
+	r.Handle("/add-project", splstHandler(addProjectHandler)).Methods("POST")
 
 	http.Handle("/", r)
 	http.ListenAndServe(addr, nil)

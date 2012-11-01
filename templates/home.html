@@ -44,6 +44,7 @@
                 $('.add-project').click(function() {
                     if ($('#add-form').is(':hidden')) {
                         $('#add-form').slideDown('fast');
+                        $('#project-name').focus();
                     } else {
                         $('#add-form').slideUp('fast');
                     }

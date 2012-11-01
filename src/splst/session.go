@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/gorilla/sessions"
 
-	"log"
 	"net/http"
 	"splst/utils"
 )
@@ -31,8 +30,6 @@ func genSession(w http.ResponseWriter, r *http.Request) (*sessions.Session, erro
 		userid = utils.GenId()
 		s.Values["userid"] = userid
 	}
-
-	log.Printf("%+v", userid)
 
 	// Saving session everytime it gets access helps to push expiry date further
 	s.Save(r, w)

@@ -3,22 +3,14 @@ package main
 import (
 	"github.com/gorilla/sessions"
 
-	"crypto/rand"
-	"fmt"
-	"io"
 	"log"
 	"net/http"
+	"splst/utils"
 )
 
 var (
 	store = sessions.NewCookieStore([]byte("something-very-secret"))
 )
-
-func id() string {
-	buf := make([]byte, 16)
-	io.ReadFull(rand.Reader, buf)
-	return fmt.Sprintf("%x", buf)
-}
 
 func genSession(w http.ResponseWriter, r *http.Request) (*sessions.Session, error) {
 	// Create a splst session and store it in cookie so that we can recognize the user when he/she gets back
@@ -36,7 +28,7 @@ func genSession(w http.ResponseWriter, r *http.Request) (*sessions.Session, erro
 	// Generate new userid if there isn't any
 	userid, ok := s.Values["userid"]
 	if !ok {
-		userid = id()
+		userid = utils.GenId()
 		s.Values["userid"] = userid
 	}
 

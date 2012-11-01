@@ -7,15 +7,46 @@
                 {{template "header"}}
             </div>
             <div class="row">
+                <div id="add-form" style="display:none;">
+                    <form class="form-horizontal">
+                        <div class="control-group">
+                            <label class="control-label" for="project-name">Project Name</label>
+                            <div class="controls">
+                                <input type="text" id="project-name" placeholder="Project Name">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="project-url">Project URL</label>
+                            <div class="controls">
+                                <input type="text" id="project-url" placeholder="Project URL">
+                            </div>
+                        </div>
+                        <div class="controls">
+                            <button type="submit" class="btn btn-success">Add</button>
+                            <button type="button" class="btn add-project">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
                 <ul id="to-upload-splsts" class="thumbnails" style="position: relative;"></ul>
             </div>
         </div>
         <script src="static/js/min/jquery-1.7.2.min.js"></script>
-        <script src="static/js/min/load-image.min.js"></script>
         <script type="text/javascript" src="static/js/min/jquery.wookmark.min.js"></script>
         <script type="text/javascript">
             $(function() {
                 $('#to-upload-splsts li').wookmark({container: $('#to-upload-splsts'), autoResize: true});
+            });
+
+            $(function() {
+                $('.add-project').click(function() {
+                    if ($('#add-form').is(':hidden')) {
+                        $('#add-form').slideDown('fast');
+                    } else {
+                        $('#add-form').slideUp('fast');
+                    }
+                });
             });
         </script>
     </body>

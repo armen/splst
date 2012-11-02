@@ -1,14 +1,15 @@
 package main
 
 import (
-	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 
+	"encoding/json"
 	"html/template"
 	"log"
 	"net/http"
 	"path"
+	"splst/project"
 )
 
 var (
@@ -44,8 +45,15 @@ func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 
 func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
 
-	log.Println(r.FormValue("project-name"))
-	log.Println(r.FormValue("project-url"))
+	projectUrl := r.FormValue("project-url")
+	projectName := r.FormValue("project-name")
+	userid := s.Values["userid"].(string)
+
+	p := project.Project{Name: projectName, URL: projectUrl, OwnerId: userid}
+	err := p.Save()
+	if err != nil {
+		return err
+	}
 
 	v, _ := json.Marshal(nil)
 	w.Write(v)

@@ -6,8 +6,10 @@ import (
 	"io"
 )
 
-func GenId() string {
-	buf := make([]byte, 16)
+func GenId(length uint) string {
+
+	buf := make([]byte, length)
 	io.ReadFull(rand.Reader, buf)
+
 	return fmt.Sprintf("%x", buf)
 }

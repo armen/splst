@@ -27,7 +27,7 @@ func genSession(w http.ResponseWriter, r *http.Request) (*sessions.Session, erro
 	// Generate new userid if there isn't any
 	userid, ok := s.Values["userid"]
 	if !ok {
-		userid = utils.GenId()
+		userid = utils.GenId(16)
 		s.Values["userid"] = userid
 	}
 

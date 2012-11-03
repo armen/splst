@@ -8,4 +8,4 @@ static/js/min/*.min.js
 playbooks/files/ssh/id_rsa
 playbooks/files/ssh/id_rsa.pub
 playbooks/files/ssh/authorized_keys
-projects/*
+static/projects/*

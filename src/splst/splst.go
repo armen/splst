@@ -16,7 +16,7 @@ var (
 	flagHost         = flag.String("host", "", "Hostname to listen on")
 	flagPort         = flag.String("port", "9980", "Listening port")
 	flagDocRoot      = flag.String("document-root", os.Getenv("PWD"), "Document root containing templates and assets")
-	flagProjectsRoot = flag.String("projects-root", path.Join(os.Getenv("PWD"), "projects"), "Projects root containing images of projects")
+	flagProjectsRoot = flag.String("projects-root", path.Join(os.Getenv("PWD"), "static/projects"), "Projects root containing images of projects")
 
 	Usage = func() {
 

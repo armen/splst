@@ -19,13 +19,17 @@ var (
 )
 
 type handlerError struct {
-	Error       error
+	Err         error
 	Message     interface{}
 	Code        int
 	ContentType string
 }
 
-type splstHandler func(http.ResponseWriter, *http.Request, *sessions.Session) *handlerError
+func (e *handlerError) Error() string {
+	return e.Err.Error()
+}
+
+type splstHandler func(http.ResponseWriter, *http.Request, *sessions.Session) error
 
 func (f splstHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
@@ -38,13 +42,23 @@ func (f splstHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	s, _ := genSession(w, r)
-	if err := f(w, r, s); err != nil {
+
+	var err *handlerError
+
+	if e := f(w, r, s); e != nil {
+
+		// If it's a regular error convert it to *handleError
+		if herr, ok := e.(*handlerError); !ok {
+			err = &handlerError{Err: e, Message: "Internal Server Error", Code: http.StatusInternalServerError}
+		} else {
+			err = herr
+		}
 
 		if err.ContentType == "" {
 			err.ContentType = "plain/text"
 		}
 
-		log.Print(err.Error)
+		log.Print(err.Err)
 
 		w.Header().Set("Content-Type", err.ContentType)
 		w.WriteHeader(err.Code)
@@ -66,22 +80,22 @@ func (f splstHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) *handlerError {
+func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
 
 	projects, err := project.RecentList()
 	if err != nil {
-		return &handlerError{Error: err, Message: "Internal Server Error", Code: http.StatusInternalServerError}
+		return err
 	}
 
 	err = templates.ExecuteTemplate(w, "home.html", projects)
 	if err != nil {
-		return &handlerError{Error: err, Message: "Internal Server Error", Code: http.StatusInternalServerError}
+		return err
 	}
 
 	return nil
 }
 
-func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) *handlerError {
+func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
 
 	errMessage := make(map[string]string)
 
@@ -91,12 +105,12 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 
 	if len(projectName) == 0 {
 		errMessage["project-name"] = "Project name is requird"
-		return &handlerError{Error: errors.New("Project name is requird"), Message: errMessage, Code: http.StatusBadRequest, ContentType: "application/json"}
+		return &handlerError{Err: errors.New("Project name is requird"), Message: errMessage, Code: http.StatusBadRequest, ContentType: "application/json"}
 	}
 
 	if len(projectUrl) == 0 {
 		errMessage["project-url"] = "Project URL is requird"
-		return &handlerError{Error: errors.New("Project URL is requird"), Message: errMessage, Code: http.StatusBadRequest, ContentType: "application/json"}
+		return &handlerError{Err: errors.New("Project URL is requird"), Message: errMessage, Code: http.StatusBadRequest, ContentType: "application/json"}
 	}
 
 	p := project.Project{Name: projectName, URL: projectUrl, OwnerId: userid}
@@ -104,15 +118,15 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 	if err != nil {
 		if err == project.InvalidUrlError {
 			errMessage["project-url"] = fmt.Sprintf("%q is not a fully qualified URL", projectUrl)
-			return &handlerError{Error: err, Message: errMessage, Code: http.StatusBadRequest, ContentType: "application/json"}
+			return &handlerError{Err: err, Message: errMessage, Code: http.StatusBadRequest, ContentType: "application/json"}
 		}
 
 		if err == project.GenerateThumbError {
 			errMessage["error"] = "Couldn't generate thumbnail image. Probably there was a problem fetching the URL. Make sure that the submitted URL is correct."
-			return &handlerError{Error: err, Message: errMessage, Code: http.StatusInternalServerError, ContentType: "application/json"}
+			return &handlerError{Err: err, Message: errMessage, Code: http.StatusInternalServerError, ContentType: "application/json"}
 		}
 
-		return &handlerError{Error: err, Message: "Internal Server Error", Code: http.StatusInternalServerError, ContentType: "application/json"}
+		return &handlerError{Err: err, Message: "Internal Server Error", Code: http.StatusInternalServerError, ContentType: "application/json"}
 	}
 
 	return nil

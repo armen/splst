@@ -68,6 +68,8 @@
                 var _cache = {};
 
                 $('#add-project').submit(function() {
+
+                    $('#error-block').fadeOut("slow");
                     $.ajax({
                         url: "add-project",
                         data: $(this).serializeArray(),

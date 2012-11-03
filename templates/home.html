@@ -76,7 +76,11 @@
                     $.ajax({
                         url: "add-project",
                         data: $(this).serializeArray(),
-                        type: "POST"
+                        type: "POST",
+                        dataType: 'json',
+                        accepts: {
+                            json: 'application/json'
+                        }
                     }).always(function(result) {
                         $.each(_cache, function(field, inline_help) {
                             group = $("#"+field+"-group");

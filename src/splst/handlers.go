@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 
 	"encoding/json"
@@ -68,10 +67,13 @@ func (f splstHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) *handlerError {
-	vars := mux.Vars(r)
-	//key := vars["key"]
 
-	err := templates.ExecuteTemplate(w, "home.html", vars)
+	projects, err := project.RecentList()
+	if err != nil {
+		return &handlerError{Error: err, Message: "Internal Server Error", Code: http.StatusInternalServerError}
+	}
+
+	err = templates.ExecuteTemplate(w, "home.html", projects)
 	if err != nil {
 		return &handlerError{Error: err, Message: "Internal Server Error", Code: http.StatusInternalServerError}
 	}

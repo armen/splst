@@ -120,3 +120,40 @@ func (p *Project) generateThumbnail(rootPath string) error {
 
 	return nil
 }
+
+func RecentList() (*[]Project, error) {
+	c, err := redis.Dial("tcp", ":6379")
+	if err != nil {
+		return nil, err
+	}
+	defer c.Close()
+
+	recentList, err := redis.Values(c.Do("LRANGE", "recent-projects", 0, 50))
+	if err != nil {
+		return nil, err
+	}
+
+	var projects []Project
+	var project Project
+
+	for len(recentList) > 0 {
+		var pid string
+		recentList, err = redis.Scan(recentList, &pid)
+		if err != nil {
+			return nil, err
+		}
+
+		p, err := redis.Bytes(c.Do("GET", "p-"+pid))
+		if err != nil {
+			return nil, err
+		}
+
+		buffer := bytes.NewBuffer(p)
+		dec := gob.NewDecoder(buffer)
+		dec.Decode(&project)
+
+		projects = append(projects, project)
+	}
+
+	return &projects, nil
+}

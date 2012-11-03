@@ -74,14 +74,16 @@
                         return false;
 
                     }).fail(function(result) {
-                        errMessage = $.parseJSON(result.responseText);
-                        $.each(errMessage, function(field, error) {
-                            group = $("#"+field+"-group");
-                            // save inline help message in the cache
-                            _cache[field] = $(".help-inline", group).text();
-                            group.addClass("error");
-                            $(".help-inline", group).text(error);
-                        });
+                        if (result.getResponseHeader("Content-Type") == "application/json") {
+                            errMessage = $.parseJSON(result.responseText);
+                            $.each(errMessage, function(field, error) {
+                                group = $("#"+field+"-group");
+                                // save inline help message in the cache
+                                _cache[field] = $(".help-inline", group).text();
+                                group.addClass("error");
+                                $(".help-inline", group).text(error);
+                            });
+                        }
                     }).success(function(result) {
                         $('#upload-message').fadeToggle("slow");
                         setTimeout(function() {

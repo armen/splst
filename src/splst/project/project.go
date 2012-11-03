@@ -5,9 +5,12 @@ import (
 
 	"bytes"
 	"encoding/gob"
+	"errors"
 	"net/url"
 	"splst/utils"
 )
+
+var InvalidUrlError = errors.New("invalid URL")
 
 type Project struct {
 	Name    string
@@ -19,7 +22,7 @@ func (p *Project) Save() error {
 
 	_, err := url.ParseRequestURI(p.URL)
 	if err != nil {
-		return err
+		return InvalidUrlError
 	}
 
 	var buffer bytes.Buffer

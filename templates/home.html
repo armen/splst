@@ -8,17 +8,22 @@
             </div>
             <div class="row">
                 <div id="add-project-container" style="display:none;">
+                    <div id="upload-message" class="alert alert-success" style="display:none;">
+                        <h4>Woot!</h4>
+                        <p>Successfully created the project.</p>
+                    </div>
                     <form class="form-horizontal" id="add-project">
-                        <div class="control-group">
+                        <div id="project-name-group" class="control-group">
                             <label class="control-label" for="project-name">Project Name</label>
                             <div class="controls">
                                 <input type="text" name="project-name" id="project-name" placeholder="Project Name">
+                                <span class="help-inline"></span>
                             </div>
                         </div>
-                        <div class="control-group">
+                        <div id="project-url-group" class="control-group">
                             <label class="control-label" for="project-url">Project URL</label>
                             <div class="controls">
-                                <input type="url" name="project-url" id="project-url" placeholder="Project URL">
+                                <input type="text" name="project-url" id="project-url" placeholder="Project URL">
                                 <span class="help-inline">Must be a fully qualified URL that includes <b>http://</b> or <b>https://</b></span>
                             </div>
                         </div>
@@ -50,9 +55,47 @@
                     }
                 });
 
+                var _cache = {};
+
                 $('#add-project').submit(function() {
-                    $.post('add-project', $(this).serializeArray(), function(result) {
-                        // check the result
+                    $.ajax({
+                        url: "add-project",
+                        data: $(this).serializeArray(),
+                        type: "POST"
+                    }).always(function(result) {
+                        $.each(_cache, function(field, inline_help) {
+                            group = $("#"+field+"-group");
+                            group.removeClass("error");
+                            $(".help-inline", group).text(inline_help);
+                        });
+                        // clear the cache
+                        _cache = {};
+
+                        return false;
+
+                    }).fail(function(result) {
+                        errMessage = $.parseJSON(result.responseText);
+                        $.each(errMessage, function(field, error) {
+                            group = $("#"+field+"-group");
+                            // save inline help message in the cache
+                            _cache[field] = $(".help-inline", group).text();
+                            group.addClass("error");
+                            $(".help-inline", group).text(error);
+                        });
+                    }).success(function(result) {
+                        $('#upload-message').fadeToggle("slow");
+                        setTimeout(function() {
+                            $('#upload-message').fadeToggle("slow");
+                            setTimeout(function() {
+                                $('#add-project-container').slideUp('fast');
+                                setTimeout(function() {
+                                    // We need to clear text input
+                                    // $("#add-form").find('input:text, input:password, input:file, select, textarea').val('');
+                                    // $("#add-form").find('input:radio, input:checkbox').removeAttr('checked').removeAttr('selected');
+                                    $("#add-project").find('input:text').val('');
+                                }, 500);
+                            }, 1500);
+                        }, 3000);
                     });
 
                     return false;

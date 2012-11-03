@@ -12,6 +12,11 @@
                         <h4>Woot!</h4>
                         <p>Successfully created the project.</p>
                     </div>
+                    <div id="error-block" class="alert alert-error" style="display:none;">
+                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        <h4>Oops!</h4>
+                        <p id="error-message"></p>
+                    </div>
                     <form class="form-horizontal" id="add-project">
                         <div id="project-name-group" class="control-group">
                             <label class="control-label" for="project-name">Project Name</label>
@@ -40,6 +45,7 @@
         </div>
         <script src="static/js/min/jquery-1.7.2.min.js"></script>
         <script type="text/javascript" src="static/js/min/jquery.wookmark.min.js"></script>
+        <script type="text/javascript" src="static/js/min/bootstrap-alert.min.js"></script>
         <script type="text/javascript">
             $(function() {
                 $('#to-upload-splsts li').wookmark({container: $('#to-upload-splsts'), autoResize: true});
@@ -77,11 +83,17 @@
                         if (result.getResponseHeader("Content-Type") == "application/json") {
                             errMessage = $.parseJSON(result.responseText);
                             $.each(errMessage, function(field, error) {
-                                group = $("#"+field+"-group");
-                                // save inline help message in the cache
-                                _cache[field] = $(".help-inline", group).text();
-                                group.addClass("error");
-                                $(".help-inline", group).text(error);
+
+                                if (field == "error") {
+                                    $("#error-message").text(error);
+                                    $("#error-block").fadeIn("fast");
+                                } else {
+                                    group = $("#"+field+"-group");
+                                    // save inline help message in the cache
+                                    _cache[field] = $(".help-inline", group).text();
+                                    group.addClass("error");
+                                    $(".help-inline", group).text(error);
+                                }
                             });
                         }
                     }).success(function(result) {

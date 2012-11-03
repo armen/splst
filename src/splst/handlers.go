@@ -110,7 +110,8 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 
 	err = p.GenerateThumbnail(projectsRoot)
 	if err != nil {
-		return &handlerError{Error: err, Message: "Internal Server Error", Code: http.StatusInternalServerError}
+		errMessage["error"] = "Couldn't generate thumbnail image. Probably there was a problem fetching the URL. Make sure that the submitted URL is correct."
+		return &handlerError{Error: err, Message: errMessage, Code: http.StatusInternalServerError, ContentType: "application/json"}
 	}
 
 	return nil

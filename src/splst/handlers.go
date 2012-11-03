@@ -108,8 +108,10 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 		return &handlerError{Error: err, Message: "Internal Server Error", Code: http.StatusInternalServerError, ContentType: "application/json"}
 	}
 
-	v, _ := json.Marshal(nil)
-	w.Write(v)
+	err = p.GenerateThumbnail(projectsRoot)
+	if err != nil {
+		return &handlerError{Error: err, Message: "Internal Server Error", Code: http.StatusInternalServerError}
+	}
 
 	return nil
 }

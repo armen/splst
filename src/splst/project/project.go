@@ -7,12 +7,19 @@ import (
 	"encoding/gob"
 	"errors"
 	"net/url"
+	"os"
+	"os/exec"
+	"path"
 	"splst/utils"
 )
 
-var InvalidUrlError = errors.New("invalid URL")
+var (
+	InvalidUrlError    = errors.New("invalid URL")
+	GenerateThumbError = errors.New("couldn't generate thumbnail image")
+)
 
 type Project struct {
+	Id      string
 	Name    string
 	URL     string
 	OwnerId string
@@ -40,11 +47,10 @@ func (p *Project) Save() error {
 
 	// want to use a short project id and should be double checked for existance
 	var key string
-	var pid string
 
 	for {
-		pid = utils.GenId(3)
-		key = "p-" + pid
+		p.Id = utils.GenId(3)
+		key = "p-" + p.Id
 		exists, _ := redis.Bool(c.Do("EXISTS", key))
 
 		if !exists {
@@ -57,15 +63,31 @@ func (p *Project) Save() error {
 		return err
 	}
 
-	_, err = c.Do("RPUSH", "u-"+p.OwnerId, pid)
+	_, err = c.Do("RPUSH", "u-"+p.OwnerId, p.Id)
 	if err != nil {
 		return err
 	}
 
-	_, err = c.Do("LPUSH", "recent-projects", pid)
+	_, err = c.Do("LPUSH", "recent-projects", p.Id)
 	if err != nil {
 		return err
 	}
 
 	return err
+}
+
+func (p *Project) GenerateThumbnail(rootPath string) error {
+
+	imgPath := path.Join(rootPath, p.OwnerId, p.Id)
+	err := os.MkdirAll(imgPath, 0777)
+	if err != nil {
+		return err
+	}
+
+	err = exec.Command("wkhtmltoimage-amd64", p.URL, path.Join(imgPath, "big.png")).Run()
+	if err != nil {
+		return GenerateThumbError
+	}
+
+	return nil
 }

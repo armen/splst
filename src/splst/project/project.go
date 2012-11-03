@@ -2,10 +2,13 @@ package project
 
 import (
 	"github.com/garyburd/redigo/redis"
+	"github.com/nfnt/resize"
 
 	"bytes"
 	"encoding/gob"
 	"errors"
+	"image"
+	"image/png"
 	"net/url"
 	"os"
 	"os/exec"
@@ -92,6 +95,26 @@ func (p *Project) generateThumbnail(rootPath string) error {
 	err = exec.Command("wkhtmltoimage-amd64", p.URL, path.Join(imgPath, "big.png")).Run()
 	if err != nil {
 		os.RemoveAll(imgPath)
+		return GenerateThumbError
+	}
+
+	f, err := os.Open(path.Join(imgPath, "big.png"))
+	if err != nil {
+		return GenerateThumbError
+	}
+
+	// Decode the whole file
+	img, _, err := image.Decode(f)
+	if err != nil {
+		return GenerateThumbError
+	}
+
+	thumb := resize.Resize(263, 0, img, resize.Lanczos3)
+	out, _ := os.Create(path.Join(imgPath, "small.png"))
+	defer out.Close()
+
+	err = png.Encode(out, thumb)
+	if err != nil {
 		return GenerateThumbError
 	}
 

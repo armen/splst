@@ -34,7 +34,7 @@
                         </div>
                         <div class="controls">
                             <button type="submit" class="btn btn-success" id="add">Add</button>
-                            <button type="button" class="btn add-project">Cancel</button>
+                            <button type="button" class="btn add-project">Close</button>
                         </div>
                     </form>
                 </div>
@@ -69,7 +69,10 @@
 
                 $('#add-project').submit(function() {
 
+                    $('button[type="submit"]', $(this)).attr("disabled", "disabled");
+                    $('#add-project-link').addClass("loading");
                     $('#error-block').fadeOut("slow");
+
                     $.ajax({
                         url: "add-project",
                         data: $(this).serializeArray(),
@@ -86,6 +89,9 @@
                         return false;
 
                     }).fail(function(result) {
+
+                        $("#add-project-link").removeClass("loading");
+
                         if (result.getResponseHeader("Content-Type") == "application/json") {
                             errMessage = $.parseJSON(result.responseText);
                             $.each(errMessage, function(field, error) {
@@ -102,7 +108,13 @@
                                 }
                             });
                         }
+
+                        $('button[type="submit"]', $("#add-project")).removeAttr("disabled");
+
                     }).success(function(result) {
+
+                        $("#add-project-link").removeClass("loading");
+
                         $('#upload-message').fadeToggle("slow");
                         setTimeout(function() {
                             $('#upload-message').fadeToggle("slow");
@@ -113,6 +125,7 @@
                                     // $("#add-form").find('input:text, input:password, input:file, select, textarea').val('');
                                     // $("#add-form").find('input:radio, input:checkbox').removeAttr('checked').removeAttr('selected');
                                     $("#add-project").find('input:text').val('');
+                                    $('button[type="submit"]', $("#add-project")).removeAttr("disabled");
                                 }, 500);
                             }, 1500);
                         }, 3000);

@@ -98,20 +98,19 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 	}
 
 	p := project.Project{Name: projectName, URL: projectUrl, OwnerId: userid}
-	err := p.Save()
+	err := p.Save(projectsRoot)
 	if err != nil {
 		if err == project.InvalidUrlError {
 			errMessage["project-url"] = fmt.Sprintf("%q is not a fully qualified URL", projectUrl)
 			return &handlerError{Error: err, Message: errMessage, Code: http.StatusBadRequest, ContentType: "application/json"}
 		}
 
-		return &handlerError{Error: err, Message: "Internal Server Error", Code: http.StatusInternalServerError, ContentType: "application/json"}
-	}
+		if err == project.GenerateThumbError {
+			errMessage["error"] = "Couldn't generate thumbnail image. Probably there was a problem fetching the URL. Make sure that the submitted URL is correct."
+			return &handlerError{Error: err, Message: errMessage, Code: http.StatusInternalServerError, ContentType: "application/json"}
+		}
 
-	err = p.GenerateThumbnail(projectsRoot)
-	if err != nil {
-		errMessage["error"] = "Couldn't generate thumbnail image. Probably there was a problem fetching the URL. Make sure that the submitted URL is correct."
-		return &handlerError{Error: err, Message: errMessage, Code: http.StatusInternalServerError, ContentType: "application/json"}
+		return &handlerError{Error: err, Message: "Internal Server Error", Code: http.StatusInternalServerError, ContentType: "application/json"}
 	}
 
 	return nil

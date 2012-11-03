@@ -25,7 +25,7 @@ type Project struct {
 	OwnerId string
 }
 
-func (p *Project) Save() error {
+func (p *Project) Save(rootPath string) error {
 
 	_, err := url.ParseRequestURI(p.URL)
 	if err != nil {
@@ -58,6 +58,11 @@ func (p *Project) Save() error {
 		}
 	}
 
+	err = p.generateThumbnail(rootPath)
+	if err != nil {
+		return err
+	}
+
 	_, err = c.Do("SET", key, buffer.Bytes())
 	if err != nil {
 		return err
@@ -76,7 +81,7 @@ func (p *Project) Save() error {
 	return err
 }
 
-func (p *Project) GenerateThumbnail(rootPath string) error {
+func (p *Project) generateThumbnail(rootPath string) error {
 
 	imgPath := path.Join(rootPath, p.OwnerId, p.Id)
 	err := os.MkdirAll(imgPath, 0777)
@@ -86,6 +91,7 @@ func (p *Project) GenerateThumbnail(rootPath string) error {
 
 	err = exec.Command("wkhtmltoimage-amd64", p.URL, path.Join(imgPath, "big.png")).Run()
 	if err != nil {
+		os.RemoveAll(imgPath)
 		return GenerateThumbError
 	}
 

@@ -7,4 +7,3 @@ install:
 uglify:
 	uglifyjs static/js/jquery-1.7.2.js > static/js/min/jquery-1.7.2.min.js
 	uglifyjs static/js/jquery.wookmark.js > static/js/min/jquery.wookmark.min.js
-	uglifyjs static/js/bootstrap-alert.js > static/js/min/bootstrap-alert.min.js

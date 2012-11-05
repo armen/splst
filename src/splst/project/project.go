@@ -35,13 +35,6 @@ func (p *Project) Save(rootPath string) error {
 		return InvalidUrlError
 	}
 
-	var buffer bytes.Buffer
-	enc := gob.NewEncoder(&buffer)
-	err = enc.Encode(p)
-	if err != nil {
-		return err
-	}
-
 	c, err := redis.Dial("tcp", ":6379")
 	if err != nil {
 		return err
@@ -62,6 +55,13 @@ func (p *Project) Save(rootPath string) error {
 	}
 
 	err = p.generateThumbnail(rootPath)
+	if err != nil {
+		return err
+	}
+
+	var buffer bytes.Buffer
+	enc := gob.NewEncoder(&buffer)
+	err = enc.Encode(p)
 	if err != nil {
 		return err
 	}

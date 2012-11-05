@@ -40,17 +40,24 @@
                 </div>
             </div>
             <div class="row">
-                <ul id="to-upload-splsts" class="thumbnails" style="position: relative;"></ul>
+                <ul id="projects" class="thumbnails" style="position: relative;">
+                {{range .projects}}
+                    <li class="span3">
+                        <div class="thumbnail">
+                            <div class="caption"><b>{{.Name}}</b></div>
+                            <img src="static/projects/{{.OwnerId}}/{{.Id}}/small.png" />
+                            <div class="caption"><a href="{{.URL}}">{{.URL}}</a></div>
+                        </div>
+                    </li>
+                {{end}}
+                </ul>
             </div>
         </div>
         <script src="static/js/min/jquery-1.7.2.min.js"></script>
         <script type="text/javascript" src="static/js/min/jquery.wookmark.min.js"></script>
         <script type="text/javascript">
             $(function() {
-                $('#to-upload-splsts li').wookmark({container: $('#to-upload-splsts'), autoResize: true});
-            });
-
-            $(function() {
+                $('#projects li').wookmark({container: $('#projects'), autoResize: true});
 
                 $('.close').click(function() {
                     $(this).parent().fadeOut("fast");

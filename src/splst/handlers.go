@@ -87,7 +87,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		return err
 	}
 
-	err = templates.ExecuteTemplate(w, "home.html", projects)
+	err = templates.ExecuteTemplate(w, "home.html", map[string]interface{}{"projects": projects})
 	if err != nil {
 		return err
 	}

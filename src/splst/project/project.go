@@ -8,7 +8,8 @@ import (
 	"encoding/gob"
 	"errors"
 	"image"
-	"image/png"
+	"image/jpeg"
+	"log"
 	"net/url"
 	"os"
 	"os/exec"
@@ -92,13 +93,13 @@ func (p *Project) generateThumbnail(rootPath string) error {
 		return err
 	}
 
-	err = exec.Command("wkhtmltoimage-amd64", p.URL, path.Join(imgPath, "big.png")).Run()
+	output, err := exec.Command(path.Join(os.Getenv("PWD"), "utils", "fetch-image.sh"), p.URL, path.Join(imgPath, "big.jpg")).CombinedOutput()
 	if err != nil {
-		os.RemoveAll(imgPath)
+		log.Println(err, string(output))
 		return GenerateThumbError
 	}
 
-	f, err := os.Open(path.Join(imgPath, "big.png"))
+	f, err := os.Open(path.Join(imgPath, "big.jpg"))
 	if err != nil {
 		return GenerateThumbError
 	}
@@ -109,11 +110,11 @@ func (p *Project) generateThumbnail(rootPath string) error {
 		return GenerateThumbError
 	}
 
-	thumb := resize.Resize(263, 0, img, resize.Lanczos3)
-	out, _ := os.Create(path.Join(imgPath, "small.png"))
+	thumb := resize.Resize(228, 0, img, resize.Lanczos3)
+	out, _ := os.Create(path.Join(imgPath, "small.jpg"))
 	defer out.Close()
 
-	err = png.Encode(out, thumb)
+	err = jpeg.Encode(out, thumb, &jpeg.Options{Quality: 90})
 	if err != nil {
 		return GenerateThumbError
 	}

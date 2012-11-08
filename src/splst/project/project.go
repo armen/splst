@@ -23,10 +23,12 @@ var (
 )
 
 type Project struct {
-	Id      string
-	Name    string
-	URL     string
-	OwnerId string
+	Id            string
+	OwnerId       string
+	URL           string
+	Name          string
+	Description   string
+	RepositoryURL string
 }
 
 func (p *Project) Save(rootPath string) error {

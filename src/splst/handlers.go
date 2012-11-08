@@ -7,9 +7,11 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 	"path"
+	"regexp"
 	"splst/project"
 	"strings"
 )
@@ -95,29 +97,66 @@ func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 	return nil
 }
 
+func fetchURLInfoHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
+
+	url := r.FormValue("url")
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	buf := make([]byte, 4096)
+	io.ReadFull(resp.Body, buf)
+
+	reg := regexp.MustCompile("<title>([^>]+)</title>")
+	title := reg.FindStringSubmatch(string(buf))
+
+	reg = regexp.MustCompile("name=\"description\"\\s+content=\"([^\"]+)\"")
+	desc := reg.FindStringSubmatch(string(buf))
+
+	info := make(map[string]string)
+
+	if len(title) == 2 {
+		info["name"] = strings.TrimSpace(title[1])
+	}
+
+	if len(desc) == 2 {
+		info["description"] = strings.TrimSpace(desc[1])
+	}
+
+	result, _ := json.Marshal(info)
+	w.Write(result)
+
+	return nil
+}
+
 func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
 
 	errMessage := make(map[string]string)
 
-	projectUrl := strings.TrimSpace(r.FormValue("project-url"))
-	projectName := strings.TrimSpace(r.FormValue("project-name"))
+	projectUrl := strings.TrimSpace(r.FormValue("url"))
+	projectName := strings.TrimSpace(r.FormValue("name"))
+	projectDescription := strings.TrimSpace(r.FormValue("description"))
+	projectRepository := strings.TrimSpace(r.FormValue("code-repo"))
 	userid := s.Values["userid"].(string)
 
 	if len(projectName) == 0 {
-		errMessage["project-name"] = "Project name is requird"
+		errMessage["name"] = "Project name is requird"
 		return &handlerError{Err: errors.New("Project name is requird"), Message: errMessage, Code: http.StatusBadRequest}
 	}
 
 	if len(projectUrl) == 0 {
-		errMessage["project-url"] = "Project URL is requird"
+		errMessage["url"] = "Project URL is requird"
 		return &handlerError{Err: errors.New("Project URL is requird"), Message: errMessage, Code: http.StatusBadRequest}
 	}
 
-	p := project.Project{Name: projectName, URL: projectUrl, OwnerId: userid}
+	p := project.Project{Name: projectName, URL: projectUrl, OwnerId: userid, Description: projectDescription, RepositoryURL: projectRepository}
 	err := p.Save(projectsRoot)
 	if err != nil {
 		if err == project.InvalidUrlError {
-			errMessage["project-url"] = fmt.Sprintf("%q is not a fully qualified URL", projectUrl)
+			errMessage["url"] = fmt.Sprintf("%q is not a fully qualified URL", projectUrl)
 			return &handlerError{Err: err, Message: errMessage, Code: http.StatusBadRequest}
 		}
 

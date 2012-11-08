@@ -18,18 +18,30 @@
                         <p id="error-message"></p>
                     </div>
                     <form class="form-horizontal" id="add-project">
-                        <div id="project-name-group" class="control-group">
-                            <label class="control-label" for="project-name">Project Name</label>
+                        <div id="url-group" class="control-group">
+                            <label class="control-label" for="url">Project URL</label>
                             <div class="controls">
-                                <input type="text" name="project-name" id="project-name" placeholder="Project Name">
+                                <input type="text" name="url" id="url" placeholder="Project URL" class="input-xxlarge">
+                                <span class="help-inline">Must be a fully qualified URL that includes <b>http://</b> or <b>https://</b></span>
+                            </div>
+                        </div>
+                        <div id="name-group" class="control-group">
+                            <label class="control-label" for="name">Project Name</label>
+                            <div class="controls">
+                                <input type="text" name="name" id="name" placeholder="Project Name" disabled="disabled" class="input-xxlarge">
                                 <span class="help-inline"></span>
                             </div>
                         </div>
-                        <div id="project-url-group" class="control-group">
-                            <label class="control-label" for="project-url">Project URL</label>
+                        <div id="description-group" class="control-group">
+                            <label class="control-label" for="description">Description</label>
                             <div class="controls">
-                                <input type="text" name="project-url" id="project-url" placeholder="Project URL">
-                                <span class="help-inline">Must be a fully qualified URL that includes <b>http://</b> or <b>https://</b></span>
+                                <textarea name="description" id="description" disabled="disabled" rows="2" class="input-xxlarge"></textarea>
+                            </div>
+                        </div>
+                        <div id="code-repo-group" class="control-group">
+                            <label class="control-label" for="code-repo">Code Repository</label>
+                            <div class="controls">
+                                <input type="text" name="code-repo" id="code-repo" disabled="disabled" class="input-xlarge">
                             </div>
                         </div>
                         <div class="controls">
@@ -66,13 +78,71 @@
                 $('.add-project').click(function() {
                     if ($('#add-project-container').is(':hidden')) {
                         $('#add-project-container').slideDown('fast');
-                        $('#project-name').focus();
+                        $('#url').focus();
                     } else {
                         $('#add-project-container').slideUp('fast');
                     }
                 });
 
                 var _cache = {};
+
+                $('#url').bind('focusout', function () {
+
+                    url = $.trim($(this).val())
+
+                    if (url == '') {
+                        return false;
+                    }
+
+                    if (url.substr(0, 7) != 'http://' && url.substr(0, 8) != 'https://') {
+                        url = 'http://' + url;
+                        $(this).val(url);
+                    }
+
+                    $("#add-project").find('input:text, textarea').attr("disabled", "disabled");
+
+                    $.ajax({
+                        url: "fetch-url-info",
+                        data: {url: url},
+                        type: "POST",
+                        dataType: 'json',
+                        accepts: {
+                            json: 'application/json'
+                        }
+                    }).always(function(result) {
+                        $.each(_cache, function(field, inline_help) {
+                            group = $("#"+field+"-group");
+                            group.removeClass("error");
+                            $(".help-inline", group).text(inline_help);
+                        });
+                        // clear the cache
+                        _cache = {};
+
+                        return false;
+
+                    }).fail(function(result) {
+
+                        url = $('#url').val();
+                        $("#add-project").find('input:text, textarea').val('');
+                        $('#url').removeAttr("disabled").val(url);
+
+                        group = $('#url-group').addClass("error");
+                        _cache['url'] = $(".help-inline", group).text();
+                        $(".help-inline", group).text('Could not fetch the url');
+                    }).success(function(result) {
+
+                        url = $('#url').val();
+                        $("#add-project").find('input:text, textarea').val('');
+                        $('#url').removeAttr("disabled").val(url);
+
+                        $('#add-project [disabled=disabled]').removeAttr("disabled");
+                        $.each(result, function(field, value) {
+                            $('#'+field).val(value);
+                        });
+
+                        $('#name').focus();
+                    });
+                });
 
                 $('#add-project').submit(function() {
 
@@ -135,7 +205,7 @@
                                     // We need to clear text input
                                     // $("#add-form").find('input:text, input:password, input:file, select, textarea').val('');
                                     // $("#add-form").find('input:radio, input:checkbox').removeAttr('checked').removeAttr('selected');
-                                    $("#add-project").find('input:text').val('');
+                                    $("#add-project").find('input:text, textarea').val('');
                                     $('button[type="submit"]', $("#add-project")).removeAttr("disabled");
                                 }, 500);
                             }, 1500);

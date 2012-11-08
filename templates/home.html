@@ -25,27 +25,28 @@
                                 <span class="help-inline">Must be a fully qualified URL that includes <b>http://</b> or <b>https://</b></span>
                             </div>
                         </div>
-                        <div id="name-group" class="control-group">
+                        <div id="name-group" class="second-stage control-group" style="display:none;">
                             <label class="control-label" for="name">Project Name</label>
                             <div class="controls">
-                                <input type="text" name="name" id="name" placeholder="Project Name" disabled="disabled" class="input-xxlarge">
+                                <input type="text" name="name" id="name" placeholder="Project Name" class="input-xxlarge">
                                 <span class="help-inline"></span>
                             </div>
                         </div>
-                        <div id="description-group" class="control-group">
+                        <div id="description-group" class="second-stage control-group" style="display:none;">
                             <label class="control-label" for="description">Description</label>
                             <div class="controls">
-                                <textarea name="description" id="description" disabled="disabled" rows="2" class="input-xxlarge"></textarea>
+                                <textarea name="description" id="description" rows="2" class="input-xxlarge"></textarea>
                             </div>
                         </div>
-                        <div id="code-repo-group" class="control-group">
+                        <div id="code-repo-group" class="second-stage control-group" style="display:none;">
                             <label class="control-label" for="code-repo">Code Repository</label>
                             <div class="controls">
-                                <input type="text" name="code-repo" id="code-repo" disabled="disabled" class="input-xlarge">
+                                <input type="text" name="code-repo" id="code-repo" class="input-xlarge">
                             </div>
                         </div>
                         <div class="controls">
-                            <button type="submit" class="btn btn-success" id="add">Add</button>
+                            <button type="button" class="btn btn-success" id="fetch">Fetch</button>
+                            <button type="submit" class="btn btn-success" id="add" style="display:none;">Add</button>
                             <button type="button" class="btn add-project">Close</button>
                         </div>
                     </form>
@@ -78,9 +79,14 @@
                 $('.add-project').click(function() {
                     if ($('#add-project-container').is(':hidden')) {
                         $('#add-project-container').slideDown('fast');
-                        $('#url').focus();
                     } else {
                         $('#add-project-container').slideUp('fast');
+                    }
+
+                    if ($('#fetch').is(':hidden')) {
+                        $('#name').focus();
+                    } else {
+                        $('#url').focus();
                     }
                 });
 
@@ -99,7 +105,12 @@
                         $(this).val(url);
                     }
 
-                    $("#add-project").find('input:text, textarea').attr("disabled", "disabled");
+                    $('#add-project-link').addClass("loading");
+                    $("#url").attr("disabled", "disabled");
+                    $('.second-stage ').slideUp('fast');
+                    $('#fetch').show();
+                    $('#add').hide();
+                    $('#name').focus();
 
                     $.ajax({
                         url: "fetch-url-info",
@@ -122,6 +133,8 @@
 
                     }).fail(function(result) {
 
+                        $("#add-project-link").removeClass("loading");
+
                         url = $('#url').val();
                         $("#add-project").find('input:text, textarea').val('');
                         $('#url').removeAttr("disabled").val(url);
@@ -129,18 +142,22 @@
                         group = $('#url-group').addClass("error");
                         _cache['url'] = $(".help-inline", group).text();
                         $(".help-inline", group).text('Could not fetch the url');
+                        $('#url').focus();
+
                     }).success(function(result) {
+
+                        $("#add-project-link").removeClass("loading");
 
                         url = $('#url').val();
                         $("#add-project").find('input:text, textarea').val('');
                         $('#url').removeAttr("disabled").val(url);
 
-                        $('#add-project [disabled=disabled]').removeAttr("disabled");
                         $.each(result, function(field, value) {
                             $('#'+field).val(value);
                         });
-
-                        $('#name').focus();
+                        $('.second-stage').slideDown('fast');
+                        $('#fetch').hide();
+                        $('#add').show();
                     });
                 });
 
@@ -206,6 +223,7 @@
                                     // $("#add-form").find('input:text, input:password, input:file, select, textarea').val('');
                                     // $("#add-form").find('input:radio, input:checkbox').removeAttr('checked').removeAttr('selected');
                                     $("#add-project").find('input:text, textarea').val('');
+                                    $('.second-stage').hide();
                                     $('button[type="submit"]', $("#add-project")).removeAttr("disabled");
                                 }, 500);
                             }, 1500);

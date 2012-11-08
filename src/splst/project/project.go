@@ -112,7 +112,7 @@ func (p *Project) generateThumbnail(rootPath string) error {
 		return GenerateThumbError
 	}
 
-	thumb := resize.Resize(228, 0, img, resize.Lanczos3)
+	thumb := resize.Resize(318, 0, img, resize.Lanczos3)
 	out, _ := os.Create(path.Join(imgPath, "small.jpg"))
 	defer out.Close()
 

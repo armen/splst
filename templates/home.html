@@ -144,6 +144,8 @@
                         $(".help-inline", group).text('Could not fetch the url');
                         $('#url').focus();
 
+                        $('button[type="submit"]', $("#add-project")).removeAttr("disabled");
+
                     }).success(function(result) {
 
                         $("#add-project-link").removeClass("loading");
@@ -158,6 +160,8 @@
                         $('.second-stage').slideDown('fast');
                         $('#fetch').hide();
                         $('#add').show();
+
+                        $('button[type="submit"]', $("#add-project")).removeAttr("disabled");
                     });
                 });
 

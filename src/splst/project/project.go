@@ -16,6 +16,7 @@ import (
 	"os/exec"
 	"path"
 	"splst/utils"
+	"time"
 )
 
 var (
@@ -60,75 +61,69 @@ func (p *Project) Save(rootPath string) error {
 		}
 	}
 
-	go func() {
-		c, err := redis.Dial("tcp", ":6379")
-		if err != nil {
-			log.Printf("Error in connecting to redis for project %s - %s", p.Id, err)
-			return
-		}
-		defer c.Close()
+	err = p.generateThumbnail(rootPath)
+	if err != nil {
+		log.Println(err)
+	}
+	p.Thumb = err == nil
 
-		hc := hdis.Conn{c}
-
-		p.Thumb = true
-		err = p.generateThumbnail(rootPath)
-		if err != nil {
-			log.Printf("Error in generating thumb for project %s - %s", p.Id, err)
-			p.Thumb = false
-		}
-
-		var buffer bytes.Buffer
-		enc := gob.NewEncoder(&buffer)
-		err = enc.Encode(p)
-		if err != nil {
-			log.Printf("Error in encoding project %s - %s", p.Id, err)
-			return
-		}
-
-		_, err = hc.Set(key, buffer.Bytes())
-		if err != nil {
-			log.Printf("Error in saving project %s - %s", p.Id, err)
-			return
-		}
-
-		_, err = c.Do("RPUSH", "u:"+p.OwnerId, p.Id)
-		if err != nil {
-			log.Printf("Error in pushing project %s into user's (%s) projects list - %s", p.Id, p.OwnerId, err)
-			return
-		}
-
-		_, err = c.Do("LPUSH", "recent-projects", p.Id)
-		if err != nil {
-			log.Printf("Error in pushing project %s into recent projects list - %s", p.Id, err)
-			return
-		}
-	}()
-
-	return err
-}
-
-func (p *Project) generateThumbnail(rootPath string) error {
-
-	imgPath := path.Join(rootPath, p.OwnerId, p.Id)
-	err := os.MkdirAll(imgPath, 0777)
+	var buffer bytes.Buffer
+	enc := gob.NewEncoder(&buffer)
+	err = enc.Encode(p)
 	if err != nil {
 		return err
 	}
 
+	_, err = hc.Set(key, buffer.Bytes())
+	if err != nil {
+		return err
+	}
+
+	_, err = c.Do("RPUSH", "u:"+p.OwnerId, p.Id)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.Do("LPUSH", "recent-projects", p.Id)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (p *Project) generateThumbnail(rootPath string) (err error) {
+
+	imgPath := path.Join(rootPath, p.OwnerId, p.Id)
+	err = os.MkdirAll(imgPath, 0777)
+	if err != nil {
+		return err
+	}
+
+	t := time.Now()
 	output, err := exec.Command(path.Join(os.Getenv("PWD"), "utils", "fetch-image.sh"), p.URL, path.Join(imgPath, "big.jpg")).CombinedOutput()
 	if err != nil {
 		log.Println(err, string(output))
+		os.RemoveAll(imgPath)
+		return GenerateThumbError
+	}
+
+	// Check the timeout
+	if time.Since(t).Seconds() > 90 {
+		os.RemoveAll(imgPath)
 		return GenerateThumbError
 	}
 
 	f, err := os.Open(path.Join(imgPath, "big.jpg"))
 	if err != nil {
+		os.RemoveAll(imgPath)
 		return GenerateThumbError
 	}
 
 	// Decode the whole file
 	img, _, err := image.Decode(f)
 	if err != nil {
+		os.RemoveAll(imgPath)
 		return GenerateThumbError
 	}
 
@@ -138,6 +133,7 @@ func (p *Project) generateThumbnail(rootPath string) error {
 
 	err = jpeg.Encode(out, thumb, &jpeg.Options{Quality: 90})
 	if err != nil {
+		os.RemoveAll(imgPath)
 		return GenerateThumbError
 	}
 

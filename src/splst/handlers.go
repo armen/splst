@@ -10,6 +10,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"path"
 	"regexp"
 	"splst/project"
@@ -152,21 +153,19 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 		return &handlerError{Err: errors.New("Project URL is requird"), Message: errMessage, Code: http.StatusBadRequest}
 	}
 
-	p := project.Project{Name: projectName, URL: projectUrl, OwnerId: userid, Description: projectDescription, RepositoryURL: projectRepository}
-	err := p.Save(projectsRoot)
+	_, err := url.ParseRequestURI(projectUrl)
 	if err != nil {
-		if err == project.InvalidUrlError {
-			errMessage["url"] = fmt.Sprintf("%q is not a fully qualified URL", projectUrl)
-			return &handlerError{Err: err, Message: errMessage, Code: http.StatusBadRequest}
-		}
-
-		if err == project.GenerateThumbError {
-			errMessage["error"] = "Couldn't generate thumbnail image. Probably there was a problem fetching the URL. Make sure that the submitted URL is correct."
-			return &handlerError{Err: err, Message: errMessage, Code: http.StatusInternalServerError}
-		}
-
-		return &handlerError{Err: err, Message: "Internal Server Error", Code: http.StatusInternalServerError}
+		errMessage["url"] = fmt.Sprintf("%q is not a fully qualified URL", projectUrl)
+		return &handlerError{Err: err, Message: errMessage, Code: http.StatusBadRequest}
 	}
+
+	go func() {
+		p := &project.Project{Name: projectName, URL: projectUrl, OwnerId: userid, Description: projectDescription, RepositoryURL: projectRepository}
+		err := p.Save(projectsRoot)
+		if err != nil {
+			log.Printf("Error in saving project %q by user %q - %s", p.Id, p.OwnerId, err)
+		}
+	}()
 
 	return nil
 }

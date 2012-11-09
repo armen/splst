@@ -59,32 +59,48 @@ func (p *Project) Save(rootPath string) error {
 		}
 	}
 
-	err = p.generateThumbnail(rootPath)
-	if err != nil {
-		return err
-	}
+	go func() {
+		c, err := redis.Dial("tcp", ":6379")
+		if err != nil {
+			log.Printf("Error in connecting to redis for project %s - %s", p.Id, err)
+			return
+		}
+		defer c.Close()
 
-	var buffer bytes.Buffer
-	enc := gob.NewEncoder(&buffer)
-	err = enc.Encode(p)
-	if err != nil {
-		return err
-	}
+		hc := hdis.Conn{c}
 
-	_, err = hc.Set(key, buffer.Bytes())
-	if err != nil {
-		return err
-	}
+		err = p.generateThumbnail(rootPath)
+		if err != nil {
+			log.Printf("Error in generating thumb for project %s - %s", p.Id, err)
+			return
+		}
 
-	_, err = c.Do("RPUSH", "u:"+p.OwnerId, p.Id)
-	if err != nil {
-		return err
-	}
+		var buffer bytes.Buffer
+		enc := gob.NewEncoder(&buffer)
+		err = enc.Encode(p)
+		if err != nil {
+			log.Printf("Error in encoding project %s - %s", p.Id, err)
+			return
+		}
 
-	_, err = c.Do("LPUSH", "recent-projects", p.Id)
-	if err != nil {
-		return err
-	}
+		_, err = hc.Set(key, buffer.Bytes())
+		if err != nil {
+			log.Printf("Error in saving project %s - %s", p.Id, err)
+			return
+		}
+
+		_, err = c.Do("RPUSH", "u:"+p.OwnerId, p.Id)
+		if err != nil {
+			log.Printf("Error in pushing project %s into user's (%s) projects list - %s", p.Id, p.OwnerId, err)
+			return
+		}
+
+		_, err = c.Do("LPUSH", "recent-projects", p.Id)
+		if err != nil {
+			log.Printf("Error in pushing project %s into recent projects list - %s", p.Id, err)
+			return
+		}
+	}()
 
 	return err
 }

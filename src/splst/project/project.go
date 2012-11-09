@@ -1,6 +1,7 @@
 package project
 
 import (
+	"github.com/armen/hdis"
 	"github.com/garyburd/redigo/redis"
 	"github.com/nfnt/resize"
 
@@ -47,12 +48,13 @@ func (p *Project) Save(rootPath string) error {
 	// want to use a short project id and should be double checked for existance
 	var key string
 
+	hc := hdis.Conn{c}
+
 	for {
 		p.Id = utils.GenId(3)
-		key = "p-" + p.Id
-		exists, _ := redis.Bool(c.Do("EXISTS", key))
+		key = "p:" + p.Id
 
-		if !exists {
+		if exists, _ := redis.Bool(hc.Do("HEXISTS", key)); !exists {
 			break
 		}
 	}
@@ -69,12 +71,12 @@ func (p *Project) Save(rootPath string) error {
 		return err
 	}
 
-	_, err = c.Do("SET", key, buffer.Bytes())
+	_, err = hc.Set(key, buffer.Bytes())
 	if err != nil {
 		return err
 	}
 
-	_, err = c.Do("RPUSH", "u-"+p.OwnerId, p.Id)
+	_, err = c.Do("RPUSH", "u:"+p.OwnerId, p.Id)
 	if err != nil {
 		return err
 	}
@@ -139,6 +141,8 @@ func RecentList() (*[]Project, error) {
 	var projects []Project
 	var project Project
 
+	hc := hdis.Conn{c}
+
 	for len(recentList) > 0 {
 		var pid string
 		recentList, err = redis.Scan(recentList, &pid)
@@ -146,7 +150,7 @@ func RecentList() (*[]Project, error) {
 			return nil, err
 		}
 
-		p, err := redis.Bytes(c.Do("GET", "p-"+pid))
+		p, err := redis.Bytes(hc.Get("p:" + pid))
 		if err != nil {
 			return nil, err
 		}

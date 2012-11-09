@@ -155,12 +155,13 @@ func RecentList() (*[]Project, error) {
 	}
 
 	var projects []Project
-	var project Project
 
 	hc := hdis.Conn{c}
 
 	for len(recentList) > 0 {
 		var pid string
+		var project Project
+
 		recentList, err = redis.Scan(recentList, &pid)
 		if err != nil {
 			return nil, err

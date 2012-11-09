@@ -30,6 +30,7 @@ type Project struct {
 	Name          string
 	Description   string
 	RepositoryURL string
+	Thumb         bool
 }
 
 func (p *Project) Save(rootPath string) error {
@@ -69,10 +70,11 @@ func (p *Project) Save(rootPath string) error {
 
 		hc := hdis.Conn{c}
 
+		p.Thumb = true
 		err = p.generateThumbnail(rootPath)
 		if err != nil {
 			log.Printf("Error in generating thumb for project %s - %s", p.Id, err)
-			return
+			p.Thumb = false
 		}
 
 		var buffer bytes.Buffer

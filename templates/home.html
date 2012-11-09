@@ -58,8 +58,12 @@
                     <li class="span4">
                         <div class="thumbnail">
                             <div class="caption"><b>{{.Name}}</b></div>
-                            <img src="static/projects/{{.OwnerId}}/{{.Id}}/small.jpg" />
-                            <div class="caption"><a href="{{.URL}}">{{.URL}}</a></div>
+                            {{if .Thumb}}<img src="static/projects/{{.OwnerId}}/{{.Id}}/small.jpg" />{{end}}
+                            <div class="caption">
+                                <a href="{{.URL}}">{{.URL | printf "%.45s"}}</a>
+                                {{if .RepositoryURL}}<a href="{{.URL}}">{{.RepositoryURL | printf "%.45s"}}</a>{{end}}
+                                {{if .Description}}<p>{{.Description | printf "%.200s"}}</p>{{end}}
+                            </div>
                         </div>
                     </li>
                 {{end}}

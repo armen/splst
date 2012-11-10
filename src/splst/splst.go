@@ -42,7 +42,8 @@ func main() {
 
 	r := mux.NewRouter()
 	r.Handle("/", splstHandler(homeHandler)).Methods("GET")
-	r.Handle("/{key}", splstHandler(homeHandler)).Methods("GET")
+	r.Handle("/recent", splstHandler(homeHandler)).Methods("GET")
+	r.Handle("/mine", splstHandler(mineHandler)).Methods("GET")
 	r.Handle("/fetch-url-info", splstHandler(fetchURLInfoHandler)).Methods("POST")
 	r.Handle("/add-project", splstHandler(addProjectHandler)).Methods("POST")
 

@@ -140,14 +140,23 @@ func (p *Project) generateThumbnail(rootPath string) (err error) {
 	return nil
 }
 
+func MyList(userid string) (*[]Project, error) {
+	return projectsList("u:"+userid, 0, 50)
+}
+
 func RecentList() (*[]Project, error) {
+	return projectsList("recent-projects", 0, 50)
+}
+
+func projectsList(key string, from, to int) (*[]Project, error) {
+
 	c, err := redis.Dial("tcp", ":6379")
 	if err != nil {
 		return nil, err
 	}
 	defer c.Close()
 
-	recentList, err := redis.Values(c.Do("LRANGE", "recent-projects", 0, 50))
+	recentList, err := redis.Values(c.Do("LRANGE", key, from, to))
 	if err != nil {
 		return nil, err
 	}

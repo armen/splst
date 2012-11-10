@@ -90,7 +90,24 @@ func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		return err
 	}
 
-	err = templates.ExecuteTemplate(w, "home.html", map[string]interface{}{"projects": projects})
+	err = templates.ExecuteTemplate(w, "home.html", map[string]interface{}{"projects": projects, "recent": true})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func mineHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
+
+	userid := s.Values["userid"].(string)
+
+	projects, err := project.MyList(userid)
+	if err != nil {
+		return err
+	}
+
+	err = templates.ExecuteTemplate(w, "home.html", map[string]interface{}{"projects": projects, "mine": true})
 	if err != nil {
 		return err
 	}

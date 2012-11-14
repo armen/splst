@@ -266,13 +266,13 @@
                 });
 
                 $('.toggle-delete').click(function () {
-                    var pid = $(this).data('pid')
+                    var pid = $(this).attr('data-pid');
                     $('#'+pid).slideToggle('fast');
                     $('#error-'+pid).slideUp('fast');
                 });
 
                 $('.delete').click(function () {
-                    var pid = $(this).data('pid')
+                    var pid = $(this).attr('data-pid');
                     $.ajax({
                         url: "project/"+pid,
                         type: "DELETE",

@@ -18,7 +18,7 @@
                         <p id="error-message"></p>
                     </div>
                     <form class="form-horizontal" id="add-project">
-                        <div id="url-group" class="control-group">
+                        <div id="url-group" class="first-stage control-group">
                             <label class="control-label" for="url">Project URL</label>
                             <div class="controls">
                                 <input type="text" name="url" id="url" placeholder="Project URL" class="input-xxlarge">
@@ -47,7 +47,8 @@
                         <div class="controls">
                             <button type="button" class="btn btn-success" id="fetch">Fetch</button>
                             <button type="submit" class="btn btn-success" id="add" style="display:none;">Add</button>
-                            <button type="button" class="btn add-project">Close</button>
+                            <button type="button" class="btn add-project" id="close">Close</button>
+                            <button type="button" class="btn" id="clear" style="display:none;">Clear</button>
                         </div>
                     </form>
                 </div>
@@ -96,10 +97,11 @@
                 });
 
                 $('.add-project').click(function() {
-                    if ($('#add-project-container').is(':hidden')) {
-                        $('#add-project-container').slideDown('fast');
-                    } else {
-                        $('#add-project-container').slideUp('fast');
+                    $('#add-project-container').slideToggle('fast');
+
+                    if (!$('#fetch').is(':hidden') && !$('#add-project-link').hasClass("loading")) {
+                        $('#url').removeAttr("disabled");
+                        $('#fetch').removeAttr("disabled");
                     }
 
                     if ($('#fetch').is(':hidden')) {
@@ -111,9 +113,9 @@
 
                 var _cache = {};
 
-                $('#url').bind('focusout', function () {
+                $('#fetch').click(function () {
 
-                    url = $.trim($(this).val())
+                    url = $.trim($("#url").val());
 
                     if (url == '') {
                         return false;
@@ -121,18 +123,16 @@
 
                     if (url.substr(0, 7) != 'http://' && url.substr(0, 8) != 'https://') {
                         url = 'http://' + url;
-                        $(this).val(url);
+                        $("#url").val(url);
                     }
 
                     $('#add-project-link').addClass("loading");
                     $("#url").attr("disabled", "disabled");
-                    $('.second-stage ').slideUp('fast');
-                    $('#fetch').show();
-                    $('#add').hide();
-                    $('#name').focus();
+                    $("#fetch").attr("disabled", "disabled");
 
                     failedToFetch = function() {
                         $("#add-project-link").removeClass("loading");
+                        $('#fetch').removeAttr("disabled");
 
                         url = $('#url').val();
                         $("#add-project").find('input:text, textarea').val('');
@@ -169,6 +169,7 @@
                       .success(function(result) {
                         if (result) {
                             $("#add-project-link").removeClass("loading");
+                            $('#fetch').removeAttr("disabled");
 
                             url = $('#url').val();
                             $("#add-project").find('input:text, textarea').val('');
@@ -178,8 +179,13 @@
                                 $('#'+field).val(value);
                             });
                             $('.second-stage').slideDown('fast');
+                            setTimeout(function() {
+                                $('.first-stage').slideUp('fast');
+                            }, 500);
                             $('#fetch').hide();
+                            $('#close').hide();
                             $('#add').show();
+                            $('#clear').show();
 
                             $('button[type="submit"]', $("#add-project")).removeAttr("disabled");
 
@@ -190,6 +196,24 @@
                         return false;
                     });
                 });
+
+                clear = function() {
+                    $('#add-project-container').slideUp('fast');
+                    setTimeout(function() {
+                        // We need to clear text input
+                        // $("#add-form").find('input:text, input:password, input:file, select, textarea').val('');
+                        // $("#add-form").find('input:radio, input:checkbox').removeAttr('checked').removeAttr('selected');
+                        $("#add-project").find('input:text, textarea').val('');
+                        $('.first-stage').show();
+                        $('.second-stage').hide();
+                        $('button[type="submit"]', $("#add-project")).removeAttr("disabled");
+                        $("#url").removeAttr("disabled");
+                        $('#fetch').show();
+                        $('#close').show();
+                        $('#add').hide();
+                        $('#clear').hide();
+                    }, 500);
+                }
 
                 $('#add-project').submit(function() {
 
@@ -242,28 +266,17 @@
                     }).success(function(result) {
 
                         $("#add-project-link").removeClass("loading");
-
-                        $('#upload-message').fadeToggle("slow");
+                        $('#upload-message').fadeIn("slow");
                         setTimeout(function() {
-                            $('#upload-message').fadeToggle("slow");
-                            setTimeout(function() {
-                                $('#add-project-container').slideUp('fast');
-                                setTimeout(function() {
-                                    // We need to clear text input
-                                    // $("#add-form").find('input:text, input:password, input:file, select, textarea').val('');
-                                    // $("#add-form").find('input:radio, input:checkbox').removeAttr('checked').removeAttr('selected');
-                                    $("#add-project").find('input:text, textarea').val('');
-                                    $('.second-stage').hide();
-                                    $('button[type="submit"]', $("#add-project")).removeAttr("disabled");
-                                    $('#fetch').show();
-                                    $('#add').hide();
-                                }, 500);
-                            }, 1500);
-                        }, 3000);
+                            $('#upload-message').fadeOut("slow");
+                            setTimeout(clear, 1000);
+                        }, 2000);
                     });
 
                     return false;
                 });
+
+                $('#clear').click(clear);
 
                 $('.toggle-delete').click(function () {
                     var pid = $(this).attr('data-pid');

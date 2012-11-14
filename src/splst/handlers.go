@@ -120,7 +120,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 
 func fetchURLInfoHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
 
-	url := r.FormValue("url")
+	url := r.URL.Query().Get("url")
 
 	resp, err := http.Get(url)
 	if err != nil {

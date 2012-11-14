@@ -146,10 +146,14 @@
                         $('button[type="submit"]', $("#add-project")).removeAttr("disabled");
                     }
 
+                    function fixedEncodeURI (str) {
+                            return encodeURI(str).replace(/%5B/g, '[').replace(/%5D/g, ']');
+                    }
+
                     $.ajax({
-                        url: "fetch-url-info",
-                        data: {url: url},
-                        type: "POST",
+                        url: "url-info",
+                        data: {url: fixedEncodeURI(url)},
+                        type: "GET",
                         dataType: 'json',
                         accepts: {
                             json: 'application/json'
@@ -222,7 +226,7 @@
                     $('#error-block').fadeOut("slow");
 
                     $.ajax({
-                        url: "add-project",
+                        url: "project",
                         data: $(this).serializeArray(),
                         type: "POST",
                         dataType: 'json',

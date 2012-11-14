@@ -20,8 +20,9 @@ import (
 )
 
 var (
-	InvalidUrlError    = errors.New("invalid URL")
-	GenerateThumbError = errors.New("couldn't generate thumbnail image")
+	InvalidUrlError      = errors.New("invalid URL")
+	GenerateThumbError   = errors.New("couldn't generate thumbnail image")
+	ProjectDeletionError = errors.New("couldn't delete the project")
 )
 
 type Project struct {
@@ -140,15 +141,19 @@ func (p *Project) generateThumbnail(rootPath string) (err error) {
 	return nil
 }
 
-func MyList(userid string) (*[]Project, error) {
+func (project Project) Mine(userid interface{}) bool {
+	return project.OwnerId == userid.(string)
+}
+
+func MyList(userid string) (*[]*Project, error) {
 	return projectsList("u:"+userid, 0, 50)
 }
 
-func RecentList() (*[]Project, error) {
+func RecentList() (*[]*Project, error) {
 	return projectsList("recent-projects", 0, 50)
 }
 
-func projectsList(key string, from, to int) (*[]Project, error) {
+func projectsList(key string, from, to int) (*[]*Project, error) {
 
 	c, err := redis.Dial("tcp", ":6379")
 	if err != nil {
@@ -161,30 +166,75 @@ func projectsList(key string, from, to int) (*[]Project, error) {
 		return nil, err
 	}
 
-	var projects []Project
-
-	hc := hdis.Conn{c}
+	var projects []*Project
 
 	for len(recentList) > 0 {
-		var pid string
-		var project Project
+		var pId string
 
-		recentList, err = redis.Scan(recentList, &pid)
+		recentList, err = redis.Scan(recentList, &pId)
 		if err != nil {
 			return nil, err
 		}
 
-		p, err := redis.Bytes(hc.Get("p:" + pid))
+		project, err := Fetch(pId)
 		if err != nil {
-			return nil, err
+			log.Println(err)
 		}
-
-		buffer := bytes.NewBuffer(p)
-		dec := gob.NewDecoder(buffer)
-		dec.Decode(&project)
-
 		projects = append(projects, project)
 	}
 
 	return &projects, nil
+}
+
+func (p *Project) Delete(rootPath string) error {
+
+	imgPath := path.Join(rootPath, p.OwnerId, p.Id)
+	err := os.RemoveAll(imgPath)
+	if err != nil {
+		return err
+	}
+
+	// Delete the owner directory if it's empty, so any errors should be ignored
+	ownerPath := path.Join(rootPath, p.OwnerId)
+	os.Remove(ownerPath)
+
+	c, err := redis.Dial("tcp", ":6379")
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+
+	hc := hdis.Conn{c}
+
+	key := "p:" + p.Id
+
+	if deleted, _ := redis.Bool(hc.Do("HDEL", key)); deleted {
+		return nil
+	}
+
+	return ProjectDeletionError
+}
+
+func Fetch(pId string) (*Project, error) {
+
+	c, err := redis.Dial("tcp", ":6379")
+	if err != nil {
+		return nil, err
+	}
+	defer c.Close()
+
+	var project Project
+
+	hc := hdis.Conn{c}
+
+	p, err := redis.Bytes(hc.Get("p:" + pId))
+	if err != nil {
+		return nil, err
+	}
+
+	buffer := bytes.NewBuffer(p)
+	dec := gob.NewDecoder(buffer)
+	dec.Decode(&project)
+
+	return &project, nil
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 
 	"encoding/json"
@@ -85,12 +86,14 @@ func (f splstHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
 
+	userid := s.Values["userid"].(string)
+
 	projects, err := project.RecentList()
 	if err != nil {
 		return err
 	}
 
-	err = templates.ExecuteTemplate(w, "home.html", map[string]interface{}{"projects": projects, "recent": true})
+	err = templates.ExecuteTemplate(w, "home.html", map[string]interface{}{"projects": projects, "userid": userid, "recent": true})
 	if err != nil {
 		return err
 	}
@@ -107,7 +110,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		return err
 	}
 
-	err = templates.ExecuteTemplate(w, "home.html", map[string]interface{}{"projects": projects, "mine": true})
+	err = templates.ExecuteTemplate(w, "home.html", map[string]interface{}{"projects": projects, "userid": userid, "mine": true})
 	if err != nil {
 		return err
 	}
@@ -185,4 +188,16 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 	}()
 
 	return nil
+}
+
+func deleteProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
+	vars := mux.Vars(r)
+	pid := vars["pid"]
+
+	p, err := project.Fetch(pid)
+	if err != nil {
+		return err
+	}
+
+	return p.Delete(projectsRoot)
 }

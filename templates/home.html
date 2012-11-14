@@ -75,7 +75,7 @@
                             {{if .Thumb}}<img src="static/projects/{{.OwnerId}}/{{.Id}}/small.jpg" />{{end}}
                             <div class="caption">
                                 <i class="icon-home"></i>&nbsp;<a href="{{.URL}}">{{.URL | printf "%.45s"}}</a>
-                                {{if .RepositoryURL}}<i class="icon-flag">&nbsp;</i><a href="{{.URL}}">{{.RepositoryURL | printf "%.45s"}}</a>{{end}}
+                                {{if .RepositoryURL}}<i class="icon-flag">&nbsp;</i><a href="{{.RepositoryURL}}">{{.RepositoryURL | printf "%.45s"}}</a>{{end}}
                                 {{if .Description}}<p>{{.Description | printf "%.200s"}}</p>{{end}}
                             </div>
                         </div>

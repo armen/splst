@@ -206,8 +206,17 @@ func (p *Project) Delete(rootPath string) error {
 
 	hc := hdis.Conn{c}
 
-	key := "p:" + p.Id
+	_, err = c.Do("LREM", "u:"+p.OwnerId, 1, p.Id)
+	if err != nil {
+		return err
+	}
 
+	_, err = c.Do("LREM", "recent-projects", 1, p.Id)
+	if err != nil {
+		return err
+	}
+
+	key := "p:" + p.Id
 	if deleted, _ := redis.Bool(hc.Do("HDEL", key)); deleted {
 		return nil
 	}

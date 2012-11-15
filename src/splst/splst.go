@@ -13,10 +13,10 @@ import (
 )
 
 var (
-	flagHost         = flag.String("host", "", "Hostname to listen on")
-	flagPort         = flag.String("port", "9980", "Listening port")
-	flagDocRoot      = flag.String("document-root", os.Getenv("PWD"), "Document root containing templates and assets")
-	flagProjectsRoot = flag.String("projects-root", path.Join(os.Getenv("PWD"), "static/projects"), "Projects root containing images of projects")
+	flagHost    = flag.String("host", "", "Hostname to listen on")
+	flagPort    = flag.String("port", "9980", "Listening port")
+	flagDocRoot = flag.String("document-root", os.Getenv("PWD"), "Document root containing templates and assets")
+	flagAppRoot = flag.String("application-root", os.Getenv("PWD"), "Application root")
 
 	Usage = func() {
 
@@ -25,8 +25,8 @@ var (
 			"\n\t--port            Listening port of the monitor"+
 			"\n\t--document-root   Document root containing templates and assets\n")
 	}
-	docRoot      string
-	projectsRoot string
+	docRoot string
+	appRoot string
 )
 
 func main() {
@@ -37,7 +37,7 @@ func main() {
 	flag.Parse()
 
 	docRoot = path.Join(*flagDocRoot, "templates")
-	projectsRoot = *flagProjectsRoot
+	appRoot = *flagAppRoot
 	addr := net.JoinHostPort(*flagHost, *flagPort)
 
 	r := mux.NewRouter()

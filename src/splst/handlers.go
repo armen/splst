@@ -181,7 +181,7 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 
 	go func() {
 		p := &project.Project{Name: projectName, URL: projectUrl, OwnerId: userid, Description: projectDescription, RepositoryURL: projectRepository}
-		err := p.Save(projectsRoot)
+		err := p.Save(appRoot)
 		if err != nil {
 			log.Printf("Error in saving project %q by user %q - %s", p.Id, p.OwnerId, err)
 		}
@@ -199,5 +199,5 @@ func deleteProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Se
 		return err
 	}
 
-	return p.Delete(projectsRoot)
+	return p.Delete(appRoot)
 }

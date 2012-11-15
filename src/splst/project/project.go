@@ -35,7 +35,7 @@ type Project struct {
 	Thumb         bool
 }
 
-func (p *Project) Save(rootPath string) error {
+func (p *Project) Save(appRoot string) error {
 
 	_, err := url.ParseRequestURI(p.URL)
 	if err != nil {
@@ -62,7 +62,7 @@ func (p *Project) Save(rootPath string) error {
 		}
 	}
 
-	err = p.generateThumbnail(rootPath)
+	err = p.generateThumbnail(appRoot)
 	if err != nil {
 		log.Println(err)
 	}
@@ -93,16 +93,17 @@ func (p *Project) Save(rootPath string) error {
 	return err
 }
 
-func (p *Project) generateThumbnail(rootPath string) (err error) {
+func (p *Project) generateThumbnail(appRoot string) (err error) {
 
-	imgPath := path.Join(rootPath, p.OwnerId, p.Id)
+	projectsPath := path.Join(appRoot, "static", "projects")
+	imgPath := path.Join(projectsPath, p.OwnerId, p.Id)
 	err = os.MkdirAll(imgPath, 0777)
 	if err != nil {
 		return err
 	}
 
 	t := time.Now()
-	output, err := exec.Command(path.Join(os.Getenv("PWD"), "utils", "fetch-image.sh"), p.URL, path.Join(imgPath, "big.jpg")).CombinedOutput()
+	output, err := exec.Command(path.Join(appRoot, "utils", "fetch-image.sh"), p.URL, path.Join(imgPath, "big.jpg")).CombinedOutput()
 	if err != nil {
 		log.Println(err, string(output))
 		os.RemoveAll(imgPath)
@@ -186,16 +187,17 @@ func projectsList(key string, from, to int) (*[]*Project, error) {
 	return &projects, nil
 }
 
-func (p *Project) Delete(rootPath string) error {
+func (p *Project) Delete(appRoot string) error {
 
-	imgPath := path.Join(rootPath, p.OwnerId, p.Id)
+	projectsPath := path.Join(appRoot, "static", "projects")
+	imgPath := path.Join(projectsPath, p.OwnerId, p.Id)
 	err := os.RemoveAll(imgPath)
 	if err != nil {
 		return err
 	}
 
 	// Delete the owner directory if it's empty, so any errors should be ignored
-	ownerPath := path.Join(rootPath, p.OwnerId)
+	ownerPath := path.Join(projectsPath, p.OwnerId)
 	os.Remove(ownerPath)
 
 	c, err := redis.Dial("tcp", ":6379")

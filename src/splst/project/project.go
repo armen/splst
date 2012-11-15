@@ -9,6 +9,7 @@ import (
 	"encoding/gob"
 	"errors"
 	"image"
+	"image/draw"
 	"image/jpeg"
 	"log"
 	"net/url"
@@ -129,9 +130,21 @@ func (p *Project) generateThumbnail(appRoot string) (err error) {
 		return GenerateThumbError
 	}
 
-	thumb := resize.Resize(318, 0, img, resize.Lanczos3)
+	resizedImg := resize.Resize(319, 0, img, resize.Lanczos3)
 	out, _ := os.Create(path.Join(imgPath, "small.jpg"))
 	defer out.Close()
+
+	height := resizedImg.Bounds().Dy() - 1
+
+	// if the image's height is more than 500px, crop it
+	if height > 500 {
+		height = 500
+	}
+
+	// remove left and top, 1px border
+	rect := image.Rect(0, 0, 318, height)
+	thumb := image.NewRGBA(rect)
+	draw.Draw(thumb, rect, resizedImg, image.Point{1, 1}, draw.Src)
 
 	err = jpeg.Encode(out, thumb, &jpeg.Options{Quality: 90})
 	if err != nil {

@@ -97,6 +97,11 @@
                 });
 
                 $('.add-project').click(function() {
+                    if ($('#add-project-link').attr('disabled')) {
+                        // We are in the midle of clearing the form
+                        return;
+                    }
+
                     $('#add-project-container').slideToggle('fast');
 
                     if (!$('#fetch').is(':hidden') && !$('#add-project-link').hasClass("loading")) {
@@ -211,6 +216,7 @@
                         $('.first-stage').show();
                         $('.second-stage').hide();
                         $('button[type="submit"]', $("#add-project")).removeAttr("disabled");
+                        $('#add-project-link').removeAttr("disabled");
                         $("#url").removeAttr("disabled");
                         $('#fetch').show();
                         $('#close').show();
@@ -270,6 +276,7 @@
                     }).success(function(result) {
 
                         $("#add-project-link").removeClass("loading");
+                        $('#add-project-link').attr("disabled", "disabled");
                         $('#upload-message').fadeIn("slow");
                         setTimeout(function() {
                             $('#upload-message').fadeOut("slow");

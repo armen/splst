@@ -79,7 +79,7 @@
                             {{end}}
                             <div><h4>{{.Name}}</h4></div>
                             <div><i class="icon-home"></i>&nbsp;<a href="{{.URL}}">{{.URL | printf "%.45s"}}</a></div>
-                            {{if .RepositoryURL}}<div><i class="icon-flag">&nbsp;</i><a href="{{.RepositoryURL}}">{{.RepositoryURL | printf "%.45s"}}</a></div>{{end}}
+                            {{if .RepositoryURL}}<div><i class="icon-flag"></i>&nbsp;<a href="{{.RepositoryURL}}">{{.RepositoryURL | printf "%.45s"}}</a></div>{{end}}
                             {{if .Description}}<p>{{.Description | printf "%.200s"}}</p>{{end}}
                         </div>
                     </li>

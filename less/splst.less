@@ -23,14 +23,17 @@
     line-height: @baseLineHeight * 1.5;
     color: @heroUnitLeadColor;
   }
-  a {
+  a, a:hover {
+      color: @white;
+  }
+  a.splst {
     padding: 50px 10px;
     color: @white;
     background-color: #bd000d;
     display: block;
     width: 2.7em;
   }
-  a:hover {
+  a:hover.splst {
     padding: 50px 10px;
     color: @white;
     background-color: @black;
@@ -38,8 +41,8 @@
     width: 2.7em;
   }
   .github {
-    margin: 3px 0 0 0;
-    padding: 0 25px 0 0;
+    margin: 3px -3px 0 0;
+    padding: 0;
   }
 }
 

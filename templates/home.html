@@ -73,8 +73,10 @@
                                 <p>There was a problem deleting this project. Please try later.</p>
                             </div>
                             {{end}}
-                            {{if .Thumb}}<img src="static/projects/{{.OwnerId}}/{{.Id}}/small.jpg" />{{end}}
-                            <div class="separator">&nbsp;</div>
+                            {{if .Thumb}}
+                                <img src="static/projects/{{.OwnerId}}/{{.Id}}/small.jpg" />
+                                <div class="separator">&nbsp;</div>
+                            {{end}}
                             <div><h4>{{.Name}}</h4></div>
                             <i class="icon-home"></i>&nbsp;<a href="{{.URL}}">{{.URL | printf "%.45s"}}</a>
                             {{if .RepositoryURL}}<i class="icon-flag">&nbsp;</i><a href="{{.RepositoryURL}}">{{.RepositoryURL | printf "%.45s"}}</a>{{end}}

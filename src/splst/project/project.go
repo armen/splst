@@ -130,19 +130,20 @@ func (p *Project) generateThumbnail(appRoot string) (err error) {
 		return GenerateThumbError
 	}
 
-	resizedImg := resize.Resize(319, 0, img, resize.Lanczos3)
+	// Final image should be 298px width
+	resizedImg := resize.Resize(299, 0, img, resize.Lanczos3)
 	out, _ := os.Create(path.Join(imgPath, "small.jpg"))
 	defer out.Close()
 
 	height := resizedImg.Bounds().Dy() - 1
 
-	// if the image's height is more than 500px, crop it
-	if height > 500 {
-		height = 500
+	// if the image's height is more than 350px, crop it
+	if height > 350 {
+		height = 350
 	}
 
 	// remove left and top, 1px border
-	rect := image.Rect(0, 0, 318, height)
+	rect := image.Rect(0, 0, 298, height)
 	thumb := image.NewRGBA(rect)
 	draw.Draw(thumb, rect, resizedImg, image.Point{1, 1}, draw.Src)
 

@@ -25,14 +25,13 @@
 
 // The actual thumbnail (can be `a` or `div`)
 .thumbnail {
-  background: @white;
+  background: #fafafa;
   display: block;
-  //padding: 4px;
-  padding: 0;
+  padding: 10px;
   margin: 10px;
   line-height: @baseLineHeight;
   border: 1px solid #ddd;
-  //.border-radius(4px);
+  .border-radius(4px);
   .box-shadow(0 1px 3px rgba(0,0,0,.055));
   .transition(all .2s ease-in-out);
 }
@@ -52,4 +51,11 @@ a.thumbnail:hover {
 .thumbnail .caption {
   padding: 9px;
   color: @gray;
+}
+.thumbnail .separator {
+  height: 5px;
+  background: @white;
+  margin: 10px -11px;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
 }

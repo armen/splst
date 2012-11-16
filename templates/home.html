@@ -59,7 +59,7 @@
                     {{if .}}
                     <li class="span4"{{if .Mine $.userid}} id="container-{{.Id}}"{{end}}>
                         <div class="thumbnail">
-                            <div class="caption"><b>{{.Name}}</b>{{if .Mine $.userid}}<i class="icon-remove-sign pull-right toggle-delete" data-pid="{{.Id}}"></i>{{end}}</div>
+                            {{if .Mine $.userid}}<div style="margin:-10px 0 16px 0"><i class="icon-remove-sign pull-right toggle-delete" data-pid="{{.Id}}"></i></div>{{end}}
                             {{if .Mine $.userid}}
                             <div id="{{.Id}}" class="alert" style="display:none;">
                                 <p>Do you really want to delete this project?</p>
@@ -74,11 +74,11 @@
                             </div>
                             {{end}}
                             {{if .Thumb}}<img src="static/projects/{{.OwnerId}}/{{.Id}}/small.jpg" />{{end}}
-                            <div class="caption">
-                                <i class="icon-home"></i>&nbsp;<a href="{{.URL}}">{{.URL | printf "%.45s"}}</a>
-                                {{if .RepositoryURL}}<i class="icon-flag">&nbsp;</i><a href="{{.RepositoryURL}}">{{.RepositoryURL | printf "%.45s"}}</a>{{end}}
-                                {{if .Description}}<p>{{.Description | printf "%.200s"}}</p>{{end}}
-                            </div>
+                            <div class="separator">&nbsp;</div>
+                            <div><h4>{{.Name}}</h4></div>
+                            <i class="icon-home"></i>&nbsp;<a href="{{.URL}}">{{.URL | printf "%.45s"}}</a>
+                            {{if .RepositoryURL}}<i class="icon-flag">&nbsp;</i><a href="{{.RepositoryURL}}">{{.RepositoryURL | printf "%.45s"}}</a>{{end}}
+                            {{if .Description}}<p>{{.Description | printf "%.200s"}}</p>{{end}}
                         </div>
                     </li>
                     {{end}}

@@ -13,7 +13,7 @@
                         <p>Successfully created the project.</p>
                     </div>
                     <div id="error-block" class="alert alert-error" style="display:none;">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
+                        <button type="button" class="close closeit" data-dismiss="alert">×</button>
                         <h4>Oops!</h4>
                         <p id="error-message"></p>
                     </div>
@@ -84,6 +84,14 @@
                         </div>
                     </li>
                     {{end}}
+                {{else}}
+                <div id="first-time-uploader-container">
+                    <div class="alert alert-success" style="text-align:center">
+                        <h4>Hurry up!</h4>
+                        <p>You haven't added any projects yet. It's very simple and no need for registration.</p>
+                        <button type="button" class="btn btn-success btn-large add-project closeit">Add your project's link in two simple steps</button>
+                    </div>
+                </div>
                 {{end}}
                 </ul>
             </div>
@@ -103,7 +111,7 @@
 
             $(function() {
 
-                $('.close').click(function() {
+                $('.closeit').click(function() {
                     $(this).parent().fadeOut("fast");
                 });
 

@@ -91,8 +91,17 @@
         <script src="static/js/min/jquery-1.7.2.min.js"></script>
         <script type="text/javascript" src="static/js/min/jquery.wookmark.min.js"></script>
         <script type="text/javascript">
+
+            wookmark = function() {
+                setTimeout(function() {
+                    $('#projects li').wookmark({container: $('#projects'), autoResize: true});
+                }, 100);
+            }
+
+            $(window).resize(wookmark);
+            $(wookmark);
+
             $(function() {
-                $('#projects li').wookmark({container: $('#projects'), autoResize: true});
 
                 $('.close').click(function() {
                     $(this).parent().fadeOut("fast");
@@ -313,7 +322,7 @@
                         $('#container-'+pid).fadeToggle('slow');
                         setTimeout(function() {
                             $('#container-'+pid).remove();
-                            $('#projects li').wookmark({container: $('#projects'), autoResize: true});
+                            wookmark();
                         }, 500);
                     });
                 });

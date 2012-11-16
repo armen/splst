@@ -74,7 +74,7 @@
                             </div>
                             {{end}}
                             {{if .Thumb}}
-                                <img src="static/projects/{{.OwnerId}}/{{.Id}}/small.jpg" />
+                                <a href="{{.URL}}"><img src="static/projects/{{.OwnerId}}/{{.Id}}/small.jpg"></a>
                                 <div class="separator">&nbsp;</div>
                             {{end}}
                             <div><h4>{{.Name}}</h4></div>

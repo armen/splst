@@ -31,7 +31,7 @@ var (
 
 func main() {
 
-	runtime.GOMAXPROCS(4)
+	runtime.GOMAXPROCS(3)
 
 	flag.Usage = Usage
 	flag.Parse()

@@ -99,6 +99,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		"recent":   true,
 		"title":    "Recent Projects",
 		"keywords": "recent projects, latest projects, new projects",
+		"newcomer": !project.HasList(userid),
 	}
 
 	err = templates.ExecuteTemplate(w, "home.html", vars)
@@ -124,6 +125,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		"mine":     true,
 		"title":    "My Projects",
 		"keywords": "my projects, add projects",
+		"newcomer": !project.HasList(userid),
 	}
 
 	err = templates.ExecuteTemplate(w, "home.html", vars)

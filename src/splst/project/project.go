@@ -160,6 +160,18 @@ func (project Project) Mine(userid interface{}) bool {
 	return project.OwnerId == userid.(string)
 }
 
+func HasList(userid string) bool {
+
+	c, err := redis.Dial("tcp", ":6379")
+	if err != nil {
+		return false
+	}
+	defer c.Close()
+
+	length, _ := redis.Int(c.Do("LLEN", "u:"+userid))
+	return length > 0
+}
+
 func MyList(userid string) (*[]*Project, error) {
 	return projectsList("u:"+userid, 0, 50)
 }

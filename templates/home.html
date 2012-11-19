@@ -54,6 +54,15 @@
                 </div>
             </div>
             <div class="row">
+                {{if .newcomer}}
+                <div id="first-time-uploader-container">
+                    <div class="alert alert-success" style="text-align:center">
+                        <h4>Hurry up!</h4>
+                        <p>You haven't added any projects yet. It's very simple and no need for registration.</p>
+                        <button type="button" class="btn btn-success btn-large add-project closeit">Add your project's link in two simple steps</button>
+                    </div>
+                </div>
+                {{end}}
                 <ul id="projects" class="thumbnails" style="position: relative;">
                 {{range .projects}}
                     {{if .}}
@@ -84,15 +93,7 @@
                         </div>
                     </li>
                     {{end}}
-                {{else}}
-                <div id="first-time-uploader-container">
-                    <div class="alert alert-success" style="text-align:center">
-                        <h4>Hurry up!</h4>
-                        <p>You haven't added any projects yet. It's very simple and no need for registration.</p>
-                        <button type="button" class="btn btn-success btn-large add-project closeit">Add your project's link in two simple steps</button>
-                    </div>
-                </div>
-                {{end}}
+               {{end}}
                 </ul>
             </div>
         </div>

@@ -211,11 +211,16 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 func deleteProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
 	vars := mux.Vars(r)
 	pid := vars["pid"]
+	userid := s.Values["userid"].(string)
 
 	p, err := project.Fetch(pid)
 	if err != nil {
 		return &handlerError{Err: err, Message: "Not Found", Code: http.StatusNotFound}
 	}
 
-	return p.Delete(appRoot)
+	if p.Mine(userid) {
+		return p.Delete(appRoot)
+	}
+
+	return &handlerError{Err: errors.New("Permission Denied"), Message: "Permission Denied", Code: http.StatusForbidden}
 }

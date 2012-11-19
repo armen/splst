@@ -93,7 +93,15 @@ func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		return err
 	}
 
-	err = templates.ExecuteTemplate(w, "home.html", map[string]interface{}{"projects": projects, "userid": userid, "recent": true})
+	vars := map[string]interface{}{
+		"projects": projects,
+		"userid":   userid,
+		"recent":   true,
+		"title":    "Recent Projects",
+		"keywords": "recent projects, latest projects, new projects",
+	}
+
+	err = templates.ExecuteTemplate(w, "home.html", vars)
 	if err != nil {
 		return err
 	}
@@ -110,7 +118,15 @@ func mineHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		return err
 	}
 
-	err = templates.ExecuteTemplate(w, "home.html", map[string]interface{}{"projects": projects, "userid": userid, "mine": true})
+	vars := map[string]interface{}{
+		"projects": projects,
+		"userid":   userid,
+		"mine":     true,
+		"title":    "My Projects",
+		"keywords": "my projects, add projects",
+	}
+
+	err = templates.ExecuteTemplate(w, "home.html", vars)
 	if err != nil {
 		return err
 	}

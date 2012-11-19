@@ -1,10 +1,10 @@
 {{define "head"}}
     <head>
         <meta charset="utf-8">
-        <title>Splst - Side Projects' LiST</title>
+        <title>{{with .title}}{{.}} - {{end}}Splst - Side Projects' LiST</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Directory of side projects">
-        <meta name="keywords" content="directory, web directory, side projects, side-projects, side-project, pet project, weekend project, projects, hobby, hobbies, list, lst">
+        <meta name="keywords" content="{{with .keywords}}{{.}}, {{end}}directory, projects directory, side projects, side-projects, side-project, pet project, weekend project, projects, hobby, hobbies, list, lst">
         <meta name="author" content="Armen Baghumian">
 
         <link rel="shortcut icon" href="/static/img/favicon.ico">

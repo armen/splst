@@ -214,7 +214,7 @@ func deleteProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Se
 
 	p, err := project.Fetch(pid)
 	if err != nil {
-		return err
+		return &handlerError{Err: err, Message: "Not Found", Code: http.StatusNotFound}
 	}
 
 	return p.Delete(appRoot)

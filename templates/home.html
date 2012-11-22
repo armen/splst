@@ -85,8 +85,10 @@
                             <div class="separator">&nbsp;</div>
                             {{if .Thumb}}
                                 <a href="{{.URL}}"><img src="static/projects/{{.OwnerId}}/{{.Id}}/small.jpg"></a>
-                                <div class="separator">&nbsp;</div>
+                            {{else}}
+                                <a href="{{.URL}}"><img src="static/img/noimg.jpg"></a>
                             {{end}}
+                            <div class="separator">&nbsp;</div>
                             <div class="btn-group">
                                 <a class="btn" title="Homepage" href="{{.URL}}"><i class="icon-home"></i></a>
                                 {{if .RepositoryURL}}&nbsp;<a class="btn" title="Code repository" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag"></i></a>{{end}}

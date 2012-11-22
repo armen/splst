@@ -5,21 +5,34 @@
 
 .breadcrumb {
   font-size: 16px;
-  padding: 4px 0 5px 0;
+  padding: 4px 0 12px 0;
   margin: 0 0 @baseLineHeight;
   list-style: none;
-  border-top: 1px solid #ddd;
+  //border-top: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
   li {
     display: inline-block;
     .ie7-inline-block();
   }
   .divider {
-    padding: 0 5px;
+    padding: 0 0 0 10px;
     color: #ccc;
   }
   .active {
     //color: @grayLight;
-    color: @linkColorHover;
+    color: @linkColor;
+    border-bottom: 2px solid @linkColor;
   }
+  li > a:hover.active {
+    color: @linkColor;
+  }
+  li > a {
+    color: #777777;
+    margin: 0 25px 0 0;
+    padding: 10px 0;
+  }
+  li > a:hover {
+    color: #000000;
+  }
+
 }

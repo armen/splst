@@ -135,15 +135,8 @@ func (p *Project) generateThumbnail(appRoot string) (err error) {
 	out, _ := os.Create(path.Join(imgPath, "small.jpg"))
 	defer out.Close()
 
-	height := resizedImg.Bounds().Dy() - 1
-
-	// if the image's height is more than 350px, crop it
-	if height > 350 {
-		height = 350
-	}
-
 	// remove left and top, 1px border
-	rect := image.Rect(0, 0, 298, height)
+	rect := image.Rect(0, 0, 298, 174)
 	thumb := image.NewRGBA(rect)
 	draw.Draw(thumb, rect, resizedImg, image.Point{1, 1}, draw.Src)
 

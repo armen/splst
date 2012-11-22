@@ -34,6 +34,8 @@
   .border-radius(4px);
   .box-shadow(0 1px 3px rgba(0,0,0,.055));
   .transition(all .2s ease-in-out);
+  height: 269px;
+  overflow: hidden;
 }
 // Add a hover state for linked versions only
 a.thumbnail:hover {
@@ -57,10 +59,13 @@ a.thumbnail:hover {
   margin: 10px -11px;
   border-top: 1px solid #ddd;
 }
-.thumbnail .delete-project {
-    margin: -10px -10px 16px 0;
-}
 .thumbnail .alert {
-    padding: 8px 14px;
-    margin-bottom: 15px;
+    display: none;
+    position: absolute;
+    padding: 10px;
+    width: 276px;
+}
+.thumbnail h4 {
+    margin: 2px 0;
+    text-align: center;
 }

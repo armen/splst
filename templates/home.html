@@ -68,28 +68,30 @@
                     {{if .}}
                     <li class="span4"{{if .Mine $.userid}} id="container-{{.Id}}"{{end}}>
                         <div class="thumbnail">
-                            {{if .Mine $.userid}}<div class="delete-project"><i class="icon-remove-sign pull-right toggle-delete" data-pid="{{.Id}}"></i></div>{{end}}
                             {{if .Mine $.userid}}
-                            <div id="{{.Id}}" class="alert" style="display:none;">
+                            <div id="{{.Id}}" class="alert">
                                 <p>Do you really want to delete this project?</p>
                                 <div class="controls">
                                     <button type="button" class="btn btn-danger btn-small delete" data-pid="{{.Id}}">Yes</button>&nbsp;&nbsp;&nbsp;&nbsp;
                                     <button type="button" class="btn btn-success btn-small toggle-delete" data-pid="{{.Id}}">No</button>
                                 </div>
                             </div>
-                            <div id="error-{{.Id}}" class="alert alert-error" style="display:none;">
-                                <h4>Oops!</h4>
+                            <div id="error-{{.Id}}" class="alert alert-error">
+                                <b>Oops!</b>
                                 <p>There was a problem deleting this project. Please try later.</p>
                             </div>
                             {{end}}
+                            <div><h4>{{.Name | printf "%.30s"}}</h4></div>
+                            <div class="separator">&nbsp;</div>
                             {{if .Thumb}}
                                 <a href="{{.URL}}"><img src="static/projects/{{.OwnerId}}/{{.Id}}/small.jpg"></a>
                                 <div class="separator">&nbsp;</div>
                             {{end}}
-                            <div><h4>{{.Name}}</h4></div>
-                            <div><i class="icon-home"></i>&nbsp;<a href="{{.URL}}">{{.URL | printf "%.45s"}}</a></div>
-                            {{if .RepositoryURL}}<div><i class="icon-flag"></i>&nbsp;<a href="{{.RepositoryURL}}">{{.RepositoryURL | printf "%.45s"}}</a></div>{{end}}
-                            {{if .Description}}<p>{{.Description | printf "%.200s"}}</p>{{end}}
+                            <div class="btn-group">
+                                <a class="btn" title="Homepage" href="{{.URL}}"><i class="icon-home"></i></a>
+                                {{if .RepositoryURL}}&nbsp;<a class="btn" title="Code repository" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag"></i></a>{{end}}
+                                {{if .Mine $.userid}}<a class="btn toggle-delete" title="Delete" target="_blank" data-pid="{{.Id}}"><i class="icon-trash"></i></a>{{end}}
+                            </div>
                         </div>
                     </li>
                     {{end}}
@@ -98,17 +100,7 @@
             </div>
         </div>
         <script src="static/js/min/jquery-1.7.2.min.js"></script>
-        <script type="text/javascript" src="static/js/min/jquery.wookmark.min.js"></script>
         <script type="text/javascript">
-
-            wookmark = function() {
-                setTimeout(function() {
-                    $('#projects li').wookmark({container: $('#projects'), autoResize: true});
-                }, 100);
-            }
-
-            $(window).resize(wookmark);
-            $(wookmark);
 
             $(function() {
 
@@ -331,7 +323,6 @@
                         $('#container-'+pid).fadeToggle('slow');
                         setTimeout(function() {
                             $('#container-'+pid).remove();
-                            wookmark();
                         }, 500);
                     });
                 });

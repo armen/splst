@@ -7,19 +7,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"html/template"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
-	"path"
 	"regexp"
 	"splst/project"
 	"strings"
-)
-
-var (
-	templates = template.Must(template.ParseGlob(path.Join(docRoot, "templates", "*.html")))
 )
 
 type handlerError struct {
@@ -199,7 +193,7 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 
 	go func() {
 		p := &project.Project{Name: projectName, URL: projectUrl, OwnerId: userid, Description: projectDescription, RepositoryURL: projectRepository}
-		err := p.Save(appRoot)
+		err := p.Save()
 		if err != nil {
 			log.Printf("Error in saving project %q by user %q - %s", p.Id, p.OwnerId, err)
 		}
@@ -219,7 +213,7 @@ func deleteProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Se
 	}
 
 	if p.Mine(userid) {
-		return p.Delete(appRoot)
+		return p.Delete()
 	}
 
 	return &handlerError{Err: errors.New("Permission Denied"), Message: "Permission Denied", Code: http.StatusForbidden}

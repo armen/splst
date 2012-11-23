@@ -7,10 +7,6 @@ import (
 	"splst/utils"
 )
 
-var (
-	store = sessions.NewCookieStore([]byte("something-very-secret"))
-)
-
 func genSession(w http.ResponseWriter, r *http.Request) (*sessions.Session, error) {
 	// Create a splst session and store it in cookie so that we can recognize the user when he/she gets back
 	s, err := store.Get(r, "splst")

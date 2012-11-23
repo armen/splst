@@ -25,21 +25,8 @@ var (
 	GenerateThumbError   = errors.New("couldn't generate thumbnail image")
 	ProjectDeletionError = errors.New("couldn't delete the project")
 	redisPool            *redis.Pool
+	appRoot              string
 )
-
-func init() {
-	redisPool = &redis.Pool{
-		MaxIdle:     20,
-		IdleTimeout: 240 * time.Second,
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", ":6379")
-			if err != nil {
-				return nil, err
-			}
-			return c, err
-		},
-	}
-}
 
 type Project struct {
 	Id            string
@@ -51,7 +38,7 @@ type Project struct {
 	Thumb         bool
 }
 
-func (p *Project) Save(appRoot string) error {
+func (p *Project) Save() error {
 
 	_, err := url.ParseRequestURI(p.URL)
 	if err != nil {
@@ -75,7 +62,7 @@ func (p *Project) Save(appRoot string) error {
 		}
 	}
 
-	err = p.generateThumbnail(appRoot)
+	err = p.generateThumbnail()
 	if err != nil {
 		log.Println(err)
 	}
@@ -106,7 +93,7 @@ func (p *Project) Save(appRoot string) error {
 	return err
 }
 
-func (p *Project) generateThumbnail(appRoot string) (err error) {
+func (p *Project) generateThumbnail() (err error) {
 
 	projectsPath := path.Join(appRoot, "static", "projects")
 	imgPath := path.Join(projectsPath, p.OwnerId, p.Id)
@@ -212,7 +199,7 @@ func projectsList(key string, from, to int) (*[]*Project, error) {
 	return &projects, nil
 }
 
-func (p *Project) Delete(appRoot string) error {
+func (p *Project) Delete() error {
 
 	projectsPath := path.Join(appRoot, "static", "projects")
 	imgPath := path.Join(projectsPath, p.OwnerId, p.Id)
@@ -267,4 +254,12 @@ func Fetch(pId string) (*Project, error) {
 	dec.Decode(&project)
 
 	return &project, nil
+}
+
+func SetRedisPool(pool *redis.Pool) {
+	redisPool = pool
+}
+
+func SetAppRoot(appRoot string) {
+	appRoot = appRoot
 }

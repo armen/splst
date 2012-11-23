@@ -38,7 +38,11 @@ func (f splstHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	s, _ := genSession(w, r)
+	s, e := genSession(w, r)
+	if e != nil {
+		log.Print(e)
+	}
+
 	var err *handlerError
 
 	if e := f(w, r, s); e != nil {

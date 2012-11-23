@@ -28,7 +28,7 @@ func genSession(w http.ResponseWriter, r *http.Request) (*sessions.Session, erro
 	}
 
 	// Saving session everytime it gets access helps to push expiry date further
-	s.Save(r, w)
+	err = s.Save(r, w)
 
-	return s, nil
+	return s, err
 }

@@ -24,7 +24,22 @@ var (
 	InvalidUrlError      = errors.New("invalid URL")
 	GenerateThumbError   = errors.New("couldn't generate thumbnail image")
 	ProjectDeletionError = errors.New("couldn't delete the project")
+	redisPool            *redis.Pool
 )
+
+func init() {
+	redisPool = &redis.Pool{
+		MaxIdle:     20,
+		IdleTimeout: 240 * time.Second,
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.Dial("tcp", ":6379")
+			if err != nil {
+				return nil, err
+			}
+			return c, err
+		},
+	}
+}
 
 type Project struct {
 	Id            string
@@ -43,10 +58,7 @@ func (p *Project) Save(appRoot string) error {
 		return InvalidUrlError
 	}
 
-	c, err := redis.Dial("tcp", ":6379")
-	if err != nil {
-		return err
-	}
+	c := redisPool.Get()
 	defer c.Close()
 
 	// want to use a short project id and should be double checked for existance
@@ -155,10 +167,7 @@ func (project Project) Mine(userid interface{}) bool {
 
 func HasList(userid string) bool {
 
-	c, err := redis.Dial("tcp", ":6379")
-	if err != nil {
-		return false
-	}
+	c := redisPool.Get()
 	defer c.Close()
 
 	length, _ := redis.Int(c.Do("LLEN", "u:"+userid))
@@ -175,10 +184,7 @@ func RecentList() (*[]*Project, error) {
 
 func projectsList(key string, from, to int) (*[]*Project, error) {
 
-	c, err := redis.Dial("tcp", ":6379")
-	if err != nil {
-		return nil, err
-	}
+	c := redisPool.Get()
 	defer c.Close()
 
 	recentList, err := redis.Values(c.Do("LRANGE", key, from, to))
@@ -219,10 +225,7 @@ func (p *Project) Delete(appRoot string) error {
 	ownerPath := path.Join(projectsPath, p.OwnerId)
 	os.Remove(ownerPath)
 
-	c, err := redis.Dial("tcp", ":6379")
-	if err != nil {
-		return err
-	}
+	c := redisPool.Get()
 	defer c.Close()
 
 	hc := hdis.Conn{c}
@@ -247,10 +250,7 @@ func (p *Project) Delete(appRoot string) error {
 
 func Fetch(pId string) (*Project, error) {
 
-	c, err := redis.Dial("tcp", ":6379")
-	if err != nil {
-		return nil, err
-	}
+	c := redisPool.Get()
 	defer c.Close()
 
 	var project Project

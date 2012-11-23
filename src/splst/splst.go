@@ -64,6 +64,11 @@ func main() {
 		port = "9980"
 	}
 
+	saveConcurrencySize, err := config.GetInt("default", "save-concurrency-size")
+	if err != nil {
+		saveConcurrencySize = 2
+	}
+
 	secrets, err := config.GetString("session", "secrets")
 	if err != nil {
 		log.Fatal(err)
@@ -97,8 +102,7 @@ func main() {
 	store = sessions.NewCookieStore(bytes.Fields([]byte(secrets))...)
 	templates = template.Must(template.ParseGlob(path.Join(docRoot, "*.html")))
 
-	project.SetRedisPool(redisPool)
-	project.SetAppRoot(appRoot)
+	project.Init(redisPool, appRoot, saveConcurrencySize)
 
 	r := mux.NewRouter()
 	r.Handle("/", splstHandler(homeHandler)).Methods("GET")

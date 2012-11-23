@@ -26,7 +26,13 @@ var (
 	ProjectDeletionError = errors.New("couldn't delete the project")
 	redisPool            *redis.Pool
 	appRoot              string
+	saveQueue            chan job
 )
+
+type job struct {
+	project *Project
+	err     chan error
+}
 
 type Project struct {
 	Id            string
@@ -38,12 +44,7 @@ type Project struct {
 	Thumb         bool
 }
 
-func (p *Project) Save() error {
-
-	_, err := url.ParseRequestURI(p.URL)
-	if err != nil {
-		return InvalidUrlError
-	}
+func (p *Project) save() error {
 
 	c := redisPool.Get()
 	defer c.Close()
@@ -62,7 +63,9 @@ func (p *Project) Save() error {
 		}
 	}
 
-	err = p.generateThumbnail()
+	log.Printf("Saving project %q, %q", p.Id, p.URL)
+
+	err := p.generateThumbnail()
 	if err != nil {
 		log.Println(err)
 	}
@@ -90,7 +93,25 @@ func (p *Project) Save() error {
 		return err
 	}
 
-	return err
+	log.Printf("Saved project %q, %q", p.Id, p.URL)
+
+	return nil
+}
+
+func (p *Project) Save() error {
+
+	_, err := url.ParseRequestURI(p.URL)
+	if err != nil {
+		return InvalidUrlError
+	}
+
+	j := job{project: p, err: make(chan error)}
+
+	// Put the job in the queue, this will block if it's full
+	saveQueue <- j
+
+	// Read the result from err channel
+	return <-j.err
 }
 
 func (p *Project) generateThumbnail() (err error) {
@@ -256,10 +277,21 @@ func Fetch(pId string) (*Project, error) {
 	return &project, nil
 }
 
-func SetRedisPool(pool *redis.Pool) {
+func Init(pool *redis.Pool, appRoot string, saveConcurrencySize int) {
 	redisPool = pool
-}
-
-func SetAppRoot(appRoot string) {
 	appRoot = appRoot
+	saveQueue = make(chan job, saveConcurrencySize)
+
+	for i := 0; i < saveConcurrencySize; i++ {
+		// Create workers
+		go func() {
+			for {
+				select {
+				// Read a job from the queue, save the project and put the result in err channel
+				case j := <-saveQueue:
+					j.err <- j.project.save()
+				}
+			}
+		}()
+	}
 }

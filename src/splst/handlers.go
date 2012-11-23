@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -138,7 +139,13 @@ func fetchURLInfoHandler(w http.ResponseWriter, r *http.Request, s *sessions.Ses
 
 	url := r.URL.Query().Get("url")
 
-	resp, err := http.Get(url)
+	tr := &http.Transport{
+		TLSClientConfig:    &tls.Config{InsecureSkipVerify: true},
+		DisableCompression: true,
+	}
+	client := &http.Client{Transport: tr}
+
+	resp, err := client.Get(url)
 	if err != nil {
 		return err
 	}

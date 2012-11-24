@@ -6,3 +6,4 @@ install:
 
 uglify:
 	uglifyjs static/js/jquery-1.7.2.js > static/js/min/jquery-1.7.2.min.js
+	uglifyjs static/js/splst.js > static/js/min/splst.min.js

@@ -64,7 +64,7 @@ $(function() {
         }
 
         $.ajax({
-            url: "url-info",
+            url: "/url-info",
             data: {url: fixedEncodeURI(url)},
             type: "GET",
             dataType: 'json',
@@ -140,7 +140,7 @@ $(function() {
         $('#error-block').fadeOut("slow");
 
         $.ajax({
-            url: "project",
+            url: "/project",
             data: $(this).serializeArray(),
             type: "POST",
             dataType: 'json',
@@ -206,7 +206,7 @@ $(function() {
     $('.delete').click(function () {
         var pid = $(this).attr('data-pid');
         $.ajax({
-            url: "project/"+pid,
+            url: "/project/"+pid,
             type: "DELETE",
             dataType: 'json',
             accepts: {

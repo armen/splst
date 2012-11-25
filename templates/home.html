@@ -90,9 +90,9 @@
                             {{end}}
                             <div class="separator">&nbsp;</div>
                             <div class="btn-group">
-                                <a class="btn" title="Homepage" href="{{.URL}}"><i class="icon-home"></i></a>
-                                {{if .RepositoryURL}}&nbsp;<a class="btn" title="Code repository" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag"></i></a>{{end}}
-                                {{if .Mine $.userid}}<a class="btn toggle-delete" title="Delete" target="_blank" data-pid="{{.Id}}"><i class="icon-trash"></i></a>{{end}}
+                                <a class="btn" title="Homepage" href="{{.URL}}"><i class="icon-home icon-large"></i></a>
+                                {{if .RepositoryURL}}&nbsp;<a class="btn" title="Code repository" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i></a>{{end}}
+                                {{if .Mine $.userid}}<a class="btn toggle-delete" title="Delete" target="_blank" data-pid="{{.Id}}"><i class="icon-trash icon-large"></i></a>{{end}}
                             </div>
                         </div>
                     </li>

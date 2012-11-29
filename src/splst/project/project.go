@@ -150,17 +150,46 @@ func (p *Project) generateThumbnail() (err error) {
 		return GenerateThumbError
 	}
 
-	// Final image should be 298px width
+	// final image should be 298x174
 	resizedImg := resize.Resize(299, 0, img, resize.Lanczos3)
-	out, _ := os.Create(path.Join(imgPath, "small.jpg"))
-	defer out.Close()
+	smallFile, err := os.Create(path.Join(imgPath, "small.jpg"))
+	if err != nil {
+		os.RemoveAll(imgPath)
+		return GenerateThumbError
+	}
+	defer smallFile.Close()
 
 	// remove left and top, 1px border
 	rect := image.Rect(0, 0, 298, 174)
-	thumb := image.NewRGBA(rect)
-	draw.Draw(thumb, rect, resizedImg, image.Point{1, 1}, draw.Src)
+	small := image.NewRGBA(rect)
+	draw.Draw(small, rect, resizedImg, image.Point{1, 1}, draw.Src)
 
-	err = jpeg.Encode(out, thumb, &jpeg.Options{Quality: 90})
+	err = jpeg.Encode(smallFile, small, &jpeg.Options{Quality: 90})
+	if err != nil {
+		os.RemoveAll(imgPath)
+		return GenerateThumbError
+	}
+
+	// big sized image
+	resizedImg = resize.Resize(406, 0, img, resize.Lanczos3)
+	bigFile, err := os.Create(path.Join(imgPath, "big.jpg"))
+	if err != nil {
+		os.RemoveAll(imgPath)
+		return GenerateThumbError
+	}
+	defer bigFile.Close()
+
+	y := resizedImg.Bounds().Dy()
+	if y > 415 {
+		y = 415
+	}
+
+	// remove left and top, 1px border
+	rect = image.Rect(0, 0, 405, y-1)
+	big := image.NewRGBA(rect)
+	draw.Draw(big, rect, resizedImg, image.Point{1, 1}, draw.Src)
+
+	err = jpeg.Encode(bigFile, big, &jpeg.Options{Quality: 90})
 	if err != nil {
 		os.RemoveAll(imgPath)
 		return GenerateThumbError

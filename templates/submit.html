@@ -1,0 +1,47 @@
+{{define "submit"}}
+<div id="add-project-container" style="display:none;">
+    <div id="upload-message" class="alert alert-success" style="display:none;">
+        <h4>Woot!</h4>
+        <p>Successfully created the project.</p>
+    </div>
+    <div id="error-block" class="alert alert-error" style="display:none;">
+        <button type="button" class="close closeit" data-dismiss="alert">×</button>
+        <h4>Oops!</h4>
+        <p id="error-message"></p>
+    </div>
+    <form class="form-horizontal" id="add-project">
+        <div id="url-group" class="first-stage control-group">
+            <label class="control-label" for="url">Project URL</label>
+            <div class="controls">
+                <input type="text" name="url" id="url" placeholder="Project URL" class="input-xxlarge">
+                <span class="help-inline">Must be a fully qualified URL that includes <b>http://</b> or <b>https://</b></span>
+            </div>
+        </div>
+        <div id="name-group" class="second-stage control-group" style="display:none;">
+            <label class="control-label" for="name">Project Name</label>
+            <div class="controls">
+                <input type="text" name="name" id="name" placeholder="Project Name" class="input-medium">
+                <span class="help-inline"></span>
+            </div>
+        </div>
+        <div id="description-group" class="second-stage control-group" style="display:none;">
+            <label class="control-label" for="description">Description</label>
+            <div class="controls">
+                <textarea name="description" id="description" rows="2" class="input-xxlarge"></textarea>
+            </div>
+        </div>
+        <div id="code-repo-group" class="second-stage control-group" style="display:none;">
+            <label class="control-label" for="code-repo">Code Repository</label>
+            <div class="controls">
+                <input type="text" name="code-repo" id="code-repo" class="input-xlarge">
+            </div>
+        </div>
+        <div class="controls">
+            <button type="button" class="btn btn-success" id="fetch">Fetch</button>
+            <button type="submit" class="btn btn-success" id="add" style="display:none;">Submit</button>
+            <button type="button" class="btn add-project" id="close">Close</button>
+            <button type="button" class="btn" id="clear" style="display:none;">Clear & Close</button>
+        </div>
+    </form>
+</div>
+{{end}}

@@ -92,7 +92,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		return err
 	}
 
-	vars := map[string]interface{}{
+	data := map[string]interface{}{
 		"projects": projects,
 		"userid":   userid,
 		"recent":   true,
@@ -101,7 +101,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		"newcomer": !project.HasList(userid),
 	}
 
-	err = templates.ExecuteTemplate(w, "home.html", vars)
+	err = templates.ExecuteTemplate(w, "home.html", data)
 	if err != nil {
 		return err
 	}
@@ -118,7 +118,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		return err
 	}
 
-	vars := map[string]interface{}{
+	data := map[string]interface{}{
 		"projects": projects,
 		"userid":   userid,
 		"mine":     true,
@@ -127,7 +127,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		"newcomer": !project.HasList(userid),
 	}
 
-	err = templates.ExecuteTemplate(w, "home.html", vars)
+	err = templates.ExecuteTemplate(w, "home.html", data)
 	if err != nil {
 		return err
 	}
@@ -228,4 +228,30 @@ func deleteProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Se
 	}
 
 	return &handlerError{Err: errors.New("Permission Denied"), Message: "Permission Denied", Code: http.StatusForbidden}
+}
+
+func projectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
+	vars := mux.Vars(r)
+	pid := vars["pid"]
+	userid := s.Values["userid"].(string)
+
+	project, err := project.Fetch(pid)
+	if err != nil {
+		return &handlerError{Err: err, Message: "Not Found", Code: http.StatusNotFound}
+	}
+
+	data := map[string]interface{}{
+		"project":  project,
+		"userid":   userid,
+		"detail":   true,
+		"title":    project.Name,
+		"keywords": "project detail",
+	}
+
+	err = templates.ExecuteTemplate(w, "project.html", data)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

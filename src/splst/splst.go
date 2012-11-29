@@ -111,6 +111,7 @@ func main() {
 	r.Handle("/url-info", splstHandler(fetchURLInfoHandler)).Methods("GET")
 	r.Handle("/project", splstHandler(addProjectHandler)).Methods("POST")
 	r.Handle("/project/{pid}", splstHandler(deleteProjectHandler)).Methods("DELETE")
+	r.Handle("/project/{pid}", splstHandler(projectHandler)).Methods("GET")
 
 	http.Handle("/", r)
 	http.ListenAndServe(addr, nil)

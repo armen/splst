@@ -9,20 +9,10 @@
             <div class="row">
                 {{template "submit" .}}
             </div>
-            <div class="row">
-                {{if .newcomer}}
-                <div id="first-time-uploader-container">
-                    <div class="alert alert-success" style="text-align:center">
-                        <h4>Hurry up!</h4>
-                        <p>You haven't added any projects yet. It's very simple and no need for registration.</p>
-                        <button type="button" class="btn btn-success btn-large add-project closeit">Submit your project's link in two simple steps</button>
-                    </div>
-                </div>
-                {{end}}
-                <ul id="projects" class="thumbnails" style="position: relative;">
-                {{range .projects}}
-                    {{if .}}
-                    <li class="span4"{{if .Mine $.userid}} id="container-{{.Id}}"{{end}}>
+            {{with .project}}
+            <div class="row project-detail"{{if .Mine $.userid}} id="container-{{.Id}}"{{end}}>
+                <span class="span5">
+                    <div class="thumbnails">
                         <div class="thumbnail">
                             {{if .Mine $.userid}}
                             <div id="{{.Id}}" class="alert">
@@ -37,30 +27,26 @@
                                 <p>There was a problem deleting this project. Please try later.</p>
                             </div>
                             {{end}}
-                            <a href="/project/{{.Id}}">
-                                <div><h4>{{.Name | printf "%.30s"}}</h4></div>
-                            </a>
-                            <div class="separator">&nbsp;</div>
-                            <a href="/project/{{.Id}}">
                             {{if .Thumb}}
-                                <img src="/static/projects/{{.OwnerId}}/{{.Id}}/small.jpg"></a>
+                                <img src="/static/projects/{{.OwnerId}}/{{.Id}}/big.jpg">
                             {{else}}
-                                <img src="/static/img/noimg.jpg"></a>
+                                <img src="/static/img/noimg-big.jpg"></a>
                             {{end}}
-                            </a>
                             <div class="separator">&nbsp;</div>
                             <div class="btn-group">
-                                <a class="btn" title="Detail" href="/project/{{.Id}}"><i class="icon-search icon-large"></i></a>
                                 <a class="btn" title="Homepage" href="{{.URL}}"><i class="icon-home icon-large"></i></a>
                                 {{if .RepositoryURL}}&nbsp;<a class="btn" title="Code repository" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i></a>{{end}}
                                 {{if .Mine $.userid}}<a class="btn toggle-delete" title="Delete" target="_blank" data-pid="{{.Id}}"><i class="icon-trash icon-large"></i></a>{{end}}
                             </div>
                         </div>
-                    </li>
-                    {{end}}
-               {{end}}
-                </ul>
+                    </div>
+                </span>
+                <span class="span7">
+                    <h4>{{.Name}}</h4>
+                    <p>{{.Description}}</p>
+                </span>
             </div>
+            {{end}}
         </div>
         {{template "scripts"}}
     </body>

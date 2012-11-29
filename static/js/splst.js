@@ -222,4 +222,13 @@ $(function() {
             }, 500);
         });
     });
+
+    $('.thumbnail').hover(function () {
+        // In
+        $('.actions', this).slideDown('fast');
+    }, function () {
+        // Out
+        $('.actions', this).slideUp('fast');
+        $('.alert', this).slideUp('fast');
+    });
 });

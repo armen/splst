@@ -64,6 +64,7 @@ a.thumbnail:hover {
     max-width: 100%;
     position: absolute;
     padding-right: 45px;
+    top: 48px;
 }
 .project-detail .alert {
     width: 367px;
@@ -74,4 +75,13 @@ a.thumbnail:hover {
     overflow: hidden;
     height: 20px;
     white-space: nowrap;
+}
+.thumbnail .actions {
+    position: absolute;
+    display: none;
+    top: 0;
+    width: 100%;
+    // Fallback for web browsers that don't support RGBa
+    background: none repeat scroll 0 0 rgb(0, 0, 0);
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.65);
 }

@@ -38,10 +38,6 @@
                             </div>
                             {{end}}
                             <a href="/project/{{.Id}}">
-                                <div><h4>{{.Name | printf "%.30s"}}</h4></div>
-                            </a>
-                            <div class="separator">&nbsp;</div>
-                            <a href="/project/{{.Id}}">
                             {{if .Thumb}}
                                 <img src="/static/projects/{{.OwnerId}}/{{.Id}}/small.jpg"></a>
                             {{else}}
@@ -49,11 +45,15 @@
                             {{end}}
                             </a>
                             <div class="separator">&nbsp;</div>
-                            <div class="btn-group">
-                                <a class="btn" title="Detail" href="/project/{{.Id}}"><i class="icon-search icon-large"></i></a>
-                                <a class="btn" title="Homepage" href="{{.URL}}"><i class="icon-home icon-large"></i></a>
-                                {{if .RepositoryURL}}&nbsp;<a class="btn" title="Code repository" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i></a>{{end}}
-                                {{if .Mine $.userid}}<a class="btn toggle-delete" title="Delete" target="_blank" data-pid="{{.Id}}"><i class="icon-trash icon-large"></i></a>{{end}}
+                            <div class="caption"><a href="/project/{{.Id}}"><div><h4>{{.Name | printf "%.30s"}}</h4></div></a></div>
+                            <div class="separator">&nbsp;</div>
+                            <div class="caption">
+                                <div class="btn-group">
+                                    <a class="btn" title="Detail" href="/project/{{.Id}}"><i class="icon-search icon-large"></i></a>
+                                    <a class="btn" title="Homepage" href="{{.URL}}"><i class="icon-home icon-large"></i></a>
+                                    {{if .RepositoryURL}}&nbsp;<a class="btn" title="Code repository" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i></a>{{end}}
+                                    {{if .Mine $.userid}}<a class="btn toggle-delete" title="Delete" target="_blank" data-pid="{{.Id}}"><i class="icon-trash icon-large"></i></a>{{end}}
+                                </div>
                             </div>
                         </div>
                     </li>

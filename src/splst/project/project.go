@@ -150,8 +150,8 @@ func (p *Project) generateThumbnail() (err error) {
 		return GenerateThumbError
 	}
 
-	// final image should be 298x174
-	resizedImg := resize.Resize(299, 0, img, resize.Lanczos3)
+	// final image should be 318x185
+	resizedImg := resize.Resize(319, 0, img, resize.Lanczos3)
 	smallFile, err := os.Create(path.Join(imgPath, "small.jpg"))
 	if err != nil {
 		os.RemoveAll(imgPath)
@@ -160,7 +160,7 @@ func (p *Project) generateThumbnail() (err error) {
 	defer smallFile.Close()
 
 	// remove left and top, 1px border
-	rect := image.Rect(0, 0, 298, 174)
+	rect := image.Rect(0, 0, 318, 185)
 	small := image.NewRGBA(rect)
 	draw.Draw(small, rect, resizedImg, image.Point{1, 1}, draw.Src)
 
@@ -171,7 +171,7 @@ func (p *Project) generateThumbnail() (err error) {
 	}
 
 	// big sized image
-	resizedImg = resize.Resize(406, 0, img, resize.Lanczos3)
+	resizedImg = resize.Resize(429, 0, img, resize.Lanczos3)
 	bigFile, err := os.Create(path.Join(imgPath, "big.jpg"))
 	if err != nil {
 		os.RemoveAll(imgPath)
@@ -185,7 +185,7 @@ func (p *Project) generateThumbnail() (err error) {
 	}
 
 	// remove left and top, 1px border
-	rect = image.Rect(0, 0, 405, y-1)
+	rect = image.Rect(0, 0, 428, y-1)
 	big := image.NewRGBA(rect)
 	draw.Draw(big, rect, resizedImg, image.Point{1, 1}, draw.Src)
 

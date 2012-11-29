@@ -35,9 +35,9 @@
                             <div class="separator">&nbsp;</div>
                             <div class="caption actions">
                                 <div class="btn-group">
-                                    <a class="btn" title="Homepage" href="{{.URL}}"><i class="icon-home icon-large"></i></a>
-                                    {{if .RepositoryURL}}&nbsp;<a class="btn" title="Code repository" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i></a>{{end}}
-                                    {{if .Mine $.userid}}<a class="btn toggle-delete" title="Delete" target="_blank" data-pid="{{.Id}}"><i class="icon-trash icon-large"></i></a>{{end}}
+                                    <a class="btn" title="Homepage (new window)" target="_blank" href="{{.URL}}"><i class="icon-home icon-large"></i></a>
+                                    {{if .RepositoryURL}}&nbsp;<a class="btn" title="Code repository (new window)" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i></a>{{end}}
+                                    {{if .Mine $.userid}}<a class="btn toggle-delete" title="Delete" data-pid="{{.Id}}"><i class="icon-trash icon-large"></i></a>{{end}}
                                 </div>
                             </div>
                         </div>
@@ -45,8 +45,8 @@
                 </span>
                 <span class="span7">
                     <h4>{{.Name}}</h4>
-                    <div><a title="Homepage" href="{{.URL}}"><i class="icon-home icon-large"></i>&nbsp;{{.URL}}</a></div>
-                    {{if .RepositoryURL}}<div><a title="Code repository" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i>&nbsp;{{.RepositoryURL}}</a><div>{{end}}
+                    <div><a title="Homepage (new window)" target="_blank" href="{{.URL}}"><i class="icon-home icon-large"></i>&nbsp;{{.URL}}</a></div>
+                    {{if .RepositoryURL}}<div><a title="Code repository (new window)" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i>&nbsp;{{.RepositoryURL}}</a><div>{{end}}
                     <p>{{.Description}}</p>
                 </span>
             </div>

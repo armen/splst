@@ -47,7 +47,7 @@
                             {{end}}
                             </a>
                             <div class="separator">&nbsp;</div>
-                            <div class="caption"><a href="/project/{{.Id}}"><div><h4>{{.Name | printf "%.30s"}}</h4></div></a></div>
+                            <div class="caption project-name"><a href="/project/{{.Id}}"><div>{{if .Favicon}}<img src="{{.Favicon}}">&nbsp;{{end}}<b>{{.Name | printf "%.35s"}}</b></div></a></div>
                             <div class="separator">&nbsp;</div>
                             <div class="caption actions">
                                 <div class="btn-group">

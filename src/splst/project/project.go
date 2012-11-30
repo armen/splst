@@ -42,6 +42,7 @@ type Project struct {
 	Name          string
 	Description   string
 	RepositoryURL string
+	Favicon       string
 	Thumb         bool
 }
 

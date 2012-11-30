@@ -141,7 +141,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 
 func fetchURLInfoHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
 
-	url := r.URL.Query().Get("url")
+	projectURL := r.URL.Query().Get("url")
 
 	tr := &http.Transport{
 		TLSClientConfig:    &tls.Config{InsecureSkipVerify: true},
@@ -149,7 +149,7 @@ func fetchURLInfoHandler(w http.ResponseWriter, r *http.Request, s *sessions.Ses
 	}
 	client := &http.Client{Transport: tr}
 
-	resp, err := client.Get(url)
+	resp, err := client.Get(projectURL)
 	if err != nil {
 		return err
 	}
@@ -158,11 +158,29 @@ func fetchURLInfoHandler(w http.ResponseWriter, r *http.Request, s *sessions.Ses
 	buf := make([]byte, 4096)
 	io.ReadFull(resp.Body, buf)
 
-	reg := regexp.MustCompile("<title>([^>]+)</title>")
+	reg := regexp.MustCompile("<\\s*title\\s*>([^<]+)")
 	title := reg.FindStringSubmatch(string(buf))
 
-	reg = regexp.MustCompile("name=\"description\"\\s+content=\"([^\"]+)\"")
-	desc := reg.FindStringSubmatch(string(buf))
+	// First find the description meta tag then extract its content
+	reg = regexp.MustCompile(".*name\\s*=.*[ '\"]description[^>]+")
+	descmeta := reg.FindStringSubmatch(string(buf))
+
+	var desc []string
+	if len(descmeta) > 0 {
+		reg = regexp.MustCompile("content\\s*=\\s*['\"]([^'\"]+)['\"]")
+		desc = reg.FindStringSubmatch(string(descmeta[0]))
+	}
+
+	// First find the link with icon rel then extract href, doing it in two steps helps to parse
+	// links with rel or href at the begining
+	reg = regexp.MustCompile("link.*rel\\s*=.*[ '\"]icon[^>]+")
+	faviconlink := reg.FindStringSubmatch(string(buf))
+
+	var fav []string
+	if len(faviconlink) > 0 {
+		reg = regexp.MustCompile("href\\s*=\\s*['\"]([^'\"]+)['\"]")
+		fav = reg.FindStringSubmatch(string(faviconlink[0]))
+	}
 
 	info := make(map[string]string)
 
@@ -172,6 +190,20 @@ func fetchURLInfoHandler(w http.ResponseWriter, r *http.Request, s *sessions.Ses
 
 	if len(desc) == 2 {
 		info["description"] = strings.TrimSpace(desc[1])
+	}
+
+	var faviconURL *url.URL
+	if len(fav) == 2 {
+		faviconURL, _ = url.Parse(fav[1])
+	} else {
+		faviconURL, _ = url.Parse("/favicon.ico")
+	}
+
+	purl, _ := url.Parse(projectURL)
+	favicon := purl.ResolveReference(faviconURL).String()
+
+	if _, err := client.Head(favicon); err == nil {
+		info["favicon"] = favicon
 	}
 
 	result, _ := json.Marshal(info)
@@ -188,7 +220,10 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 	projectName := strings.TrimSpace(r.FormValue("name"))
 	projectDescription := strings.TrimSpace(r.FormValue("description"))
 	projectRepository := strings.TrimSpace(r.FormValue("code-repo"))
+	projectFavicon := strings.TrimSpace(r.FormValue("favicon"))
 	userid := s.Values["userid"].(string)
+
+	log.Println("armen", projectFavicon)
 
 	if len(projectName) == 0 {
 		errMessage["name"] = "Project name is requird"
@@ -207,7 +242,7 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 	}
 
 	go func() {
-		p := &project.Project{Name: projectName, URL: projectUrl, OwnerId: userid, Description: projectDescription, RepositoryURL: projectRepository}
+		p := &project.Project{Name: projectName, URL: projectUrl, OwnerId: userid, Description: projectDescription, RepositoryURL: projectRepository, Favicon: projectFavicon}
 		err := p.Save()
 		if err != nil {
 			log.Printf("Error in saving project %q by user %q - %s", p.Id, p.OwnerId, err)

@@ -45,7 +45,7 @@
                 </span>
                 <span class="span7">
                     <h4>{{.Name}}</h4>
-                    <div><a title="Homepage (new window)" target="_blank" href="{{.URL}}">{{if .Favicon}}<img src="{{.Favicon}}">{{else}}<i class="icon-home icon-large"></i>{{end}}&nbsp;{{.URL}}</a></div>
+                    <div><a title="Homepage (new window)" target="_blank" href="{{.URL}}">{{if .Favicon}}<img src="{{.Favicon}}" width="16px" height="16px">{{else}}<i class="icon-home icon-large"></i>{{end}}&nbsp;{{.URL}}</a></div>
                     {{if .RepositoryURL}}<div><a title="Code repository (new window)" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i>&nbsp;{{.RepositoryURL}}</a><div>{{end}}
                     <p>{{.Description}}</p>
                 </span>

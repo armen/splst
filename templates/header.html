@@ -12,7 +12,12 @@
     </header>
     <ul class="breadcrumb splst-breadcrumb">
         <li><a href="/recent"{{with .recent}} class="active"{{end}}>Recent Projects</a></li>
-        <li><a href="/mine"{{with .mine}} class="active"{{end}}>My Projects</a></li>
+        <li>
+            <a href="/mine"{{with .mine}} class="active"{{end}}>
+                My Projects<span id="my-projects-count" class="label"><small>{{.myProjectsCount}}</small></span>
+                <span id="jobs-count" class="label label-important" {{if .jobsCount}}{{else}}style="display:none;"{{end}}><small>{{.jobsCount}}</small></span>
+            </a>
+        </li>
         {{if .detail}}<li><a href="/project/{{.project.Id}}" class="active">Project Detail</a></li>{{end}}
         <li class="pull-right upload"><b><a id="add-project-link" class="add-project btn btn-small btn-success" href="#">Submit +</a></b></li>
     </ul>

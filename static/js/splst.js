@@ -188,6 +188,12 @@ $(function() {
             $('#upload-message').fadeIn("slow");
             setTimeout(function() {
                 $('#upload-message').fadeOut("slow");
+
+                // Increase jobs count and show it
+                count = parseInt($('small', $('#jobs-count')).text());
+                $('small', $('#jobs-count')).text(++count);
+                $('#jobs-count').show();
+
                 setTimeout(clear, 1000);
             }, 2000);
         });
@@ -219,6 +225,10 @@ $(function() {
             $('#container-'+pid).fadeToggle('slow');
             setTimeout(function() {
                 $('#container-'+pid).remove();
+
+                // Decrease my-projects count
+                count = parseInt($('small', $('#my-projects-count')).text());
+                $('small', $('#my-projects-count')).text(--count);
             }, 500);
         });
     });
@@ -231,4 +241,24 @@ $(function() {
         $('.actions', this).slideUp('fast');
         $('.alert', this).slideUp('fast');
     });
+
+    $('#my-projects-count').tooltip({placement: 'top', title: function () {
+        count = $('small', this).text() 
+        if (count == 0) {
+            return "You haven't submitted any projects yet!";
+        } else if (count == 1) {
+            return "Great! You already have a project";
+        } else {
+            return count+" projects. Good job!";
+        }
+    }});
+
+    $('#jobs-count').tooltip({placement: 'top', title: function () {
+        count = $('small', this).text() 
+        if (count == 1) {
+            return "You have "+count+" job in the queue.";
+        } else if (count > 1) {
+            return "You have "+count+" jobs in the queue.";
+        }
+    }});
 });

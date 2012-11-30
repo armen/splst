@@ -21,12 +21,13 @@ import (
 )
 
 var (
-	InvalidUrlError      = errors.New("invalid URL")
-	GenerateThumbError   = errors.New("couldn't generate thumbnail image")
-	ProjectDeletionError = errors.New("couldn't delete the project")
-	redisPool            *redis.Pool
-	appRoot              string
-	saveQueue            chan job
+	InvalidUrlError    = errors.New("invalid URL")
+	GenerateThumbError = errors.New("couldn't generate thumbnail image")
+	ProjectDeleteError = errors.New("couldn't delete the project")
+	ProjectSaveError   = errors.New("couldn't save the project")
+	redisPool          *redis.Pool
+	appRoot            string
+	saveQueue          chan job
 )
 
 type job struct {
@@ -49,19 +50,11 @@ func (p *Project) save() error {
 	c := redisPool.Get()
 	defer c.Close()
 
-	// want to use a short project id and should be double checked for existance
-	var key string
-
 	hc := hdis.Conn{c}
 
-	for {
-		p.Id = utils.GenId(3)
-		key = "p:" + p.Id
-
-		if exists, _ := redis.Bool(hc.Do("HEXISTS", key)); !exists {
-			break
-		}
-	}
+	// Decrease number of jobs and remove it from the queue
+	defer hc.Do("HINCRBY", "u:"+p.OwnerId+":jobs", -1)
+	defer c.Do("SREM", "jobs-in-queue", p.Id)
 
 	log.Printf("Saving project %q, %q", p.Id, p.URL)
 
@@ -77,6 +70,8 @@ func (p *Project) save() error {
 	if err != nil {
 		return err
 	}
+
+	key := "p:" + p.Id
 
 	_, err = hc.Set(key, buffer.Bytes())
 	if err != nil {
@@ -105,13 +100,35 @@ func (p *Project) Save() error {
 		return InvalidUrlError
 	}
 
-	j := job{project: p, err: make(chan error)}
+	c := redisPool.Get()
+	defer c.Close()
 
-	// Put the job in the queue, this will block if it's full
-	saveQueue <- j
+	hc := hdis.Conn{c}
 
-	// Read the result from err channel
-	return <-j.err
+	// Use a short project id and double checked for it's existance
+	for {
+		p.Id = utils.GenId(3)
+		key := "p:" + p.Id
+
+		if exists, _ := redis.Bool(hc.Do("HEXISTS", key)); !exists {
+			break
+		}
+	}
+
+	if ok, _ := redis.Bool(c.Do("SADD", "jobs-in-queue", p.Id)); ok {
+
+		hc.Do("HINCRBY", "u:"+p.OwnerId+":jobs", 1)
+
+		j := job{project: p, err: make(chan error)}
+
+		// Put the job in the queue, this will block if it's full
+		saveQueue <- j
+
+		// Read the result from err channel
+		return <-j.err
+	}
+
+	return ProjectSaveError
 }
 
 func (p *Project) generateThumbnail() (err error) {
@@ -203,12 +220,25 @@ func (project Project) Mine(userid interface{}) bool {
 }
 
 func HasList(userid string) bool {
+	return ListCount(userid) > 0
+}
 
+func ListCount(userid string) int {
 	c := redisPool.Get()
 	defer c.Close()
 
 	length, _ := redis.Int(c.Do("LLEN", "u:"+userid))
-	return length > 0
+	return length
+}
+
+func JobsCount(userid string) int {
+	c := redisPool.Get()
+	defer c.Close()
+
+	hc := hdis.Conn{c}
+	count, _ := redis.Int(hc.Do("HGET", "u:"+userid+":jobs"))
+
+	return count
 }
 
 func MyList(userid string) (*[]*Project, error) {
@@ -282,7 +312,7 @@ func (p *Project) Delete() error {
 		return nil
 	}
 
-	return ProjectDeletionError
+	return ProjectDeleteError
 }
 
 func Fetch(pId string) (*Project, error) {

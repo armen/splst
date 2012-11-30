@@ -93,12 +93,14 @@ func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 	}
 
 	data := map[string]interface{}{
-		"projects": projects,
-		"userid":   userid,
-		"recent":   true,
-		"title":    "Recent Projects",
-		"keywords": "recent projects, latest projects, new projects",
-		"newcomer": !project.HasList(userid),
+		"projects":        projects,
+		"userid":          userid,
+		"recent":          true,
+		"title":           "Recent Projects",
+		"keywords":        "recent projects, latest projects, new projects",
+		"newcomer":        !project.HasList(userid),
+		"myProjectsCount": project.ListCount(userid),
+		"jobsCount":       project.JobsCount(userid),
 	}
 
 	err = templates.ExecuteTemplate(w, "home.html", data)
@@ -119,12 +121,14 @@ func mineHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 	}
 
 	data := map[string]interface{}{
-		"projects": projects,
-		"userid":   userid,
-		"mine":     true,
-		"title":    "My Projects",
-		"keywords": "my projects, add projects",
-		"newcomer": !project.HasList(userid),
+		"projects":        projects,
+		"userid":          userid,
+		"mine":            true,
+		"title":           "My Projects",
+		"keywords":        "my projects, add projects",
+		"newcomer":        !project.HasList(userid),
+		"myProjectsCount": project.ListCount(userid),
+		"jobsCount":       project.JobsCount(userid),
 	}
 
 	err = templates.ExecuteTemplate(w, "home.html", data)
@@ -235,17 +239,19 @@ func projectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session)
 	pid := vars["pid"]
 	userid := s.Values["userid"].(string)
 
-	project, err := project.Fetch(pid)
+	p, err := project.Fetch(pid)
 	if err != nil {
 		return &handlerError{Err: err, Message: "Not Found", Code: http.StatusNotFound}
 	}
 
 	data := map[string]interface{}{
-		"project":  project,
-		"userid":   userid,
-		"detail":   true,
-		"title":    project.Name,
-		"keywords": "project detail",
+		"project":         p,
+		"userid":          userid,
+		"detail":          true,
+		"title":           p.Name,
+		"keywords":        "project detail",
+		"myProjectsCount": project.ListCount(userid),
+		"jobsCount":       project.JobsCount(userid),
 	}
 
 	err = templates.ExecuteTemplate(w, "project.html", data)

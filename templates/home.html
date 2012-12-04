@@ -26,19 +26,6 @@
                     {{if .}}
                     <li class="span4"{{if .Mine $.userid}} id="container-{{.Id}}"{{end}}>
                         <div class="thumbnail">
-                            {{if .Mine $.userid}}
-                            <div id="{{.Id}}" class="alert">
-                                <p>Do you really want to delete this project?</p>
-                                <div class="controls">
-                                    <button type="button" class="btn btn-danger btn-small delete" data-pid="{{.Id}}">Yes</button>&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <button type="button" class="btn btn-success btn-small toggle-delete" data-pid="{{.Id}}">No</button>
-                                </div>
-                            </div>
-                            <div id="error-{{.Id}}" class="alert alert-error">
-                                <b>Oops!</b>
-                                <p>There was a problem deleting this project. Please try later.</p>
-                            </div>
-                            {{end}}
                             <a href="/project/{{.Id}}">
                             {{if .Thumb}}
                                 <img src="/static/projects/{{.OwnerId}}/{{.Id}}/small.jpg"></a>
@@ -49,13 +36,26 @@
                             <div class="separator">&nbsp;</div>
                             <div class="caption project-name"><a href="/project/{{.Id}}"><div>{{if .Favicon}}<img src="{{.Favicon}}" width="16px" height="16px">&nbsp;{{end}}<b>{{.Name | printf "%.35s"}}</b></div></a></div>
                             <div class="separator">&nbsp;</div>
-                            <div class="caption actions{{if .Description}} actions-with-description{{end}}">
+                            <div class="caption actions">
                                 <div class="btn-group">
-                                    <a class="btn" title="Detail" href="/project/{{.Id}}"><i class="icon-search icon-large"></i></a>
+                                    <a class="btn" title="Detail" href="/project/{{.Id}}"><i class="icon-list icon-large"></i></a>
                                     <a class="btn" title="Homepage (new window)" target="_blank" href="{{.URL}}"><i class="icon-home icon-large"></i></a>
                                     {{if .RepositoryURL}}&nbsp;<a class="btn" title="Code repository (new window)" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i></a>{{end}}
                                     {{if .Mine $.userid}}<a class="btn toggle-delete" title="Delete" data-pid="{{.Id}}"><i class="icon-trash icon-large"></i></a>{{end}}
                                 </div>
+                                {{if .Mine $.userid}}
+                                <div id="{{.Id}}" class="alert">
+                                    <p>Do you really want to delete this project?</p>
+                                    <div class="controls">
+                                        <button type="button" class="btn btn-danger btn-small delete" data-pid="{{.Id}}">Yes</button>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <button type="button" class="btn btn-success btn-small toggle-delete" data-pid="{{.Id}}">No</button>
+                                    </div>
+                                </div>
+                                <div id="error-{{.Id}}" class="alert alert-error">
+                                    <b>Oops!</b>
+                                    <p>There was a problem deleting this project.<br>Please try later.</p>
+                                </div>
+                                {{end}}
                                 {{if .Description}}<p class="description">{{.Description}}</p>{{end}}
                             </div>
                         </div>

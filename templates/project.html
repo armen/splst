@@ -14,19 +14,6 @@
                 <span class="span5">
                     <div class="thumbnails">
                         <div class="thumbnail">
-                            {{if .Mine $.userid}}
-                            <div id="{{.Id}}" class="alert">
-                                <p>Do you really want to delete this project?</p>
-                                <div class="controls">
-                                    <button type="button" class="btn btn-danger btn-small delete" data-pid="{{.Id}}">Yes</button>&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <button type="button" class="btn btn-success btn-small toggle-delete" data-pid="{{.Id}}">No</button>
-                                </div>
-                            </div>
-                            <div id="error-{{.Id}}" class="alert alert-error">
-                                <b>Oops!</b>
-                                <p>There was a problem deleting this project. Please try later.</p>
-                            </div>
-                            {{end}}
                             {{if .Thumb}}
                                 <img src="/static/projects/{{.OwnerId}}/{{.Id}}/big.jpg">
                             {{else}}
@@ -39,6 +26,19 @@
                                     {{if .RepositoryURL}}&nbsp;<a class="btn" title="Code repository (new window)" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i></a>{{end}}
                                     {{if .Mine $.userid}}<a class="btn toggle-delete" title="Delete" data-pid="{{.Id}}"><i class="icon-trash icon-large"></i></a>{{end}}
                                 </div>
+                                {{if .Mine $.userid}}
+                                <div id="{{.Id}}" class="alert">
+                                    <p>Do you really want to delete this project?</p>
+                                    <div class="controls">
+                                        <button type="button" class="btn btn-danger btn-small delete" data-pid="{{.Id}}">Yes</button>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <button type="button" class="btn btn-success btn-small toggle-delete" data-pid="{{.Id}}">No</button>
+                                    </div>
+                                </div>
+                                <div id="error-{{.Id}}" class="alert alert-error">
+                                    <b>Oops!</b>
+                                    <p>There was a problem deleting this project. Please try later.</p>
+                                </div>
+                                {{end}}
                             </div>
                         </div>
                     </div>

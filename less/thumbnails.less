@@ -61,9 +61,8 @@ a.thumbnail:hover {
 }
 .thumbnail .alert {
     display: none;
-    max-width: 100%;
     position: absolute;
-    padding-right: 45px;
+    padding-right: 25px;
     top: 48px;
 }
 .project-detail .alert {
@@ -73,13 +72,14 @@ a.thumbnail:hover {
     position: absolute;
     display: none;
     top: 0;
+    bottom: 45px;
     width: 100%;
     // Fallback for web browsers that don't support RGBa
     background: none repeat scroll 0 0 rgb(0, 0, 0);
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0.75);
 }
-.thumbnail .actions-with-description {
-    height: 100%;
+.project-detail .actions {
+    bottom: auto;
 }
 .thumbnail p.description {
     margin: 10px 20px 0 0;

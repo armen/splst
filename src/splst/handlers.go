@@ -202,7 +202,7 @@ func fetchURLInfoHandler(w http.ResponseWriter, r *http.Request, s *sessions.Ses
 	purl, _ := url.Parse(projectURL)
 	favicon := purl.ResolveReference(faviconURL).String()
 
-	if _, err := client.Head(favicon); err == nil {
+	if res, err := client.Head(favicon); err == nil && res.StatusCode == 200 {
 		info["favicon"] = favicon
 	}
 

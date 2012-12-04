@@ -10,3 +10,4 @@ playbooks/files/ssh/id_rsa.pub
 playbooks/files/ssh/authorized_keys
 static/projects/*
 conf/*.ini
+conf/BUILD

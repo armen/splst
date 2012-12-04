@@ -10,6 +10,7 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -24,6 +25,7 @@ var (
 	config         conf.ConfigFile
 	docRoot        string
 	appRoot        string
+	BUILD          []byte
 	sessionSecrets [][]byte
 	templates      *template.Template
 	store          *sessions.CookieStore
@@ -83,6 +85,12 @@ func main() {
 	if err != nil {
 		redisIdleTimeout = 240
 	}
+
+	BUILD, err = ioutil.ReadFile(path.Join(appRoot, "conf", "BUILD"))
+	if err != nil {
+		log.Fatalf("%s - Please make sure BUILD file is created with \"make styles\"", err)
+	}
+	BUILD = bytes.TrimSpace(BUILD)
 
 	redisPool := &redis.Pool{
 		MaxIdle:     redisMaxIdle,

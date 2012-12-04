@@ -93,6 +93,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 	}
 
 	data := map[string]interface{}{
+		"BUILD":           string(BUILD),
 		"projects":        projects,
 		"userid":          userid,
 		"recent":          true,
@@ -121,6 +122,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 	}
 
 	data := map[string]interface{}{
+		"BUILD":           string(BUILD),
 		"projects":        projects,
 		"userid":          userid,
 		"mine":            true,
@@ -280,6 +282,7 @@ func projectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session)
 	}
 
 	data := map[string]interface{}{
+		"BUILD":           string(BUILD),
 		"project":         p,
 		"userid":          userid,
 		"detail":          true,

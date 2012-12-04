@@ -44,10 +44,10 @@
                     </div>
                 </span>
                 <span class="span7">
-                    <h4>{{if .Favicon}}<img src="{{.Favicon}}" width="16px" height="16px">&nbsp;{{end}}{{.Name}}</h4>
+                    <h3>{{if .Favicon}}<img src="{{.Favicon}}" width="16px" height="16px">&nbsp;{{end}}{{.Name}}</h3>
                     <div><a title="Homepage (new window)" target="_blank" href="{{.URL}}"><i class="icon-home icon-large"></i>&nbsp;{{.URL}}</a></div>
                     {{if .RepositoryURL}}<div><a title="Code repository (new window)" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i>&nbsp;{{.RepositoryURL}}</a><div>{{end}}
-                    <p>{{.Description}}</p>
+                    <p class="description">{{.Description}}</p>
                 </span>
             </div>
             {{end}}

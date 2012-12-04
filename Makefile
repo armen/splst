@@ -1,4 +1,4 @@
-BUILD=`date +'%Y%m%d%H%M%S'`
+BUILD = $(shell date +'%Y%m%d%H%M%S')
 
 install:
 	go get splst

@@ -14,3 +14,8 @@ uglify:
 	uglifyjs static/js/jquery-1.7.2.js > static/js/min/jquery-1.7.2.min.js
 	uglifyjs static/js/splst.js > static/js/min/splst.min.js
 	uglifyjs static/js/bootstrap-tooltip.js > static/js/min/bootstrap-tooltip.min.js
+
+gofmt-hook:
+	wget -q https://raw.github.com/edsrzf/gofmt-git-hook/master/fmt-check -O /tmp/pre-commit
+	mv --interactive /tmp/pre-commit $(shell git rev-parse --git-dir)/hooks/
+	chmod +x $(shell git rev-parse --git-dir)/hooks/pre-commit

@@ -37,12 +37,7 @@
                             <div class="caption project-name"><a href="/project/{{.Id}}"><div>{{if .Favicon}}<img src="{{.Favicon}}" width="16px" height="16px">&nbsp;{{end}}<b>{{.Name | printf "%.35s"}}</b></div></a></div>
                             <div class="separator">&nbsp;</div>
                             <div class="caption actions">
-                                <div class="btn-group">
-                                    <a class="btn" title="Detail" href="/project/{{.Id}}"><i class="icon-list icon-large"></i></a>
-                                    <a class="btn" title="Homepage (new window)" target="_blank" href="{{.URL}}"><i class="icon-home icon-large"></i></a>
-                                    {{if .RepositoryURL}}&nbsp;<a class="btn" title="Code repository (new window)" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i></a>{{end}}
-                                    {{if .Mine $.userid}}<a class="btn toggle-delete" title="Delete" data-pid="{{.Id}}"><i class="icon-trash icon-large"></i></a>{{end}}
-                                </div>
+                                {{if .Description}}<p class="description">{{.Description}}</p>{{end}}
                                 {{if .Mine $.userid}}
                                 <div id="{{.Id}}" class="alert">
                                     <p>Do you really want to delete this project?</p>
@@ -56,7 +51,12 @@
                                     <p>There was a problem deleting this project.<br>Please try later.</p>
                                 </div>
                                 {{end}}
-                                {{if .Description}}<p class="description">{{.Description}}</p>{{end}}
+                                <div class="btn-group">
+                                    <a class="btn btn-plain btn-small" title="Detail" href="/project/{{.Id}}"><i class="icon-list icon-large"></i></a>
+                                    <a class="btn btn-plain btn-small" title="Homepage (new window)" target="_blank" href="{{.URL}}"><i class="icon-home icon-large"></i></a>
+                                    {{if .RepositoryURL}}&nbsp;<a class="btn btn-plain btn-small" title="Code repository (new window)" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i></a>{{end}}
+                                    {{if .Mine $.userid}}<a class="btn btn-plain btn-small toggle-delete" title="Delete" data-pid="{{.Id}}"><i class="icon-trash icon-large"></i></a>{{end}}
+                                </div>
                             </div>
                         </div>
                     </li>

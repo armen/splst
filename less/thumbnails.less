@@ -59,14 +59,24 @@ a.thumbnail:hover {
   margin: 0;
   border-top: 1px solid #ddd;
 }
-.thumbnail .alert {
-    display: none;
-    position: absolute;
-    padding-right: 25px;
-    top: 48px;
+.thumbnail {
+    .alert {
+        display: none;
+        position: absolute;
+        padding-right: 28px;
+        top: 10px;
+    }
+    .alert-error {
+        padding-right: 20px;
+    }
 }
-.project-detail .alert {
-    width: 367px;
+.project-detail { 
+    .alert {
+        width: 367px;
+    }
+    .alert-error {
+        padding-right: 28px;
+    }
 }
 .thumbnail .actions {
     position: absolute;
@@ -78,15 +88,26 @@ a.thumbnail:hover {
     background: none repeat scroll 0 0 rgb(0, 0, 0);
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0.75);
 }
-.project-detail .actions {
-    bottom: auto;
+.project-detail {
+    .actions {
+        bottom: auto;
+        min-height: 12px;
+    }
+    .alert {
+        top: 40px;
+    }
 }
 .thumbnail p.description {
-    margin: 10px 20px 0 0;
+    margin: 0 20px 0 0;
     color: #ffffff;
     text-shadow: 0 1px 0 rgba(0,0,0,.5);
 }
 .thumbnail .project-name {
     height: 24px;
     overflow: hidden;
+}
+.thumbnail .actions .btn-group {
+    position:absolute;
+    bottom:0;
+    right:18px;
 }

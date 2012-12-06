@@ -22,9 +22,9 @@
                             <div class="separator">&nbsp;</div>
                             <div class="caption actions">
                                 <div class="btn-group">
-                                    <a class="btn" title="Homepage (new window)" target="_blank" href="{{.URL}}"><i class="icon-home icon-large"></i></a>
-                                    {{if .RepositoryURL}}&nbsp;<a class="btn" title="Code repository (new window)" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i></a>{{end}}
-                                    {{if .Mine $.userid}}<a class="btn toggle-delete" title="Delete" data-pid="{{.Id}}"><i class="icon-trash icon-large"></i></a>{{end}}
+                                    <a class="btn btn-plain btn-small" title="Homepage (new window)" target="_blank" href="{{.URL}}"><i class="icon-home icon-large"></i></a>
+                                    {{if .RepositoryURL}}&nbsp;<a class="btn btn-plain btn-small" title="Code repository (new window)" target="_blank" href="{{.RepositoryURL}}"><i class="icon-flag icon-large"></i></a>{{end}}
+                                    {{if .Mine $.userid}}<a class="btn btn-plain btn-small toggle-delete" title="Delete" data-pid="{{.Id}}"><i class="icon-trash icon-large"></i></a>{{end}}
                                 </div>
                                 {{if .Mine $.userid}}
                                 <div id="{{.Id}}" class="alert">

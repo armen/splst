@@ -230,3 +230,25 @@ input[type="submit"].btn {
   color: @grayDark;
   text-decoration: none;
 }
+
+// Plani buttons
+// --------------------------------------------------
+
+.btn-plain,
+.btn-plain:active,
+.btn-plain[disabled] {
+  .box-shadow(none);
+}
+.btn-plain {
+  border-color: transparent;
+  cursor: pointer;
+  color: @linkColor;
+  .border-radius(0);
+  margin: 2px;
+}
+.btn-plain:hover {
+  color: @linkColorHover;
+}
+.btn-plain[disabled]:hover {
+  color: @grayDark;
+}

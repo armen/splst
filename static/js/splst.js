@@ -243,7 +243,7 @@ $(function() {
     });
 
     $('#my-projects-count').tooltip({placement: 'top', title: function () {
-        count = $('small', this).text() 
+        count = $('small', this).text();
         if (count == 0) {
             return "You haven't submitted any projects yet!";
         } else if (count == 1) {
@@ -254,11 +254,11 @@ $(function() {
     }});
 
     $('#jobs-count').tooltip({placement: 'top', title: function () {
-        count = $('small', this).text() 
+        count = $('small', this).text();
         if (count == 1) {
-            return "You have "+count+" job in the queue.";
+            return "You have "+count+" job in the queue";
         } else if (count > 1) {
-            return "You have "+count+" jobs in the queue.";
+            return "You have "+count+" jobs in the queue";
         }
     }});
 });

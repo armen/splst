@@ -14,6 +14,7 @@ import (
 	"net/url"
 	"regexp"
 	"splst/project"
+	"strconv"
 	"strings"
 )
 
@@ -58,7 +59,7 @@ func (f splstHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		contentType := strings.FieldsFunc(r.Header.Get("Accept"), func(sep rune) bool { return ',' == sep })[0]
 
 		if contentType == "" {
-			contentType = "plain/text"
+			contentType = "plain/html"
 		}
 
 		log.Print(err.Err)
@@ -73,8 +74,20 @@ func (f splstHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			message = []byte(err.Message.(string))
 		}
 
-		if contentType == "application/json" {
+		switch contentType {
+		case "application/json":
 			message, _ = json.Marshal(err.Message)
+		default:
+			data := map[string]interface{}{
+				"BUILD":    string(BUILD),
+				"title":    http.StatusText(err.Code),
+				"keywords": strconv.Itoa(err.Code) + ", " + http.StatusText(err.Code),
+				"error":    err.Message,
+			}
+			err := templates.ExecuteTemplate(w, "error.html", data)
+			if err == nil {
+				return
+			}
 		}
 
 		w.Write(message)
@@ -319,7 +332,8 @@ func pageHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 			return err
 		}
 	default:
-		return &handlerError{Err: fmt.Errorf("Page %q couldn't be found", page), Message: "Not Found", Code: http.StatusNotFound}
+		err := fmt.Errorf("Page %q could not be found!", page)
+		return &handlerError{Err: err, Message: err.Error(), Code: http.StatusNotFound}
 	}
 
 	return nil

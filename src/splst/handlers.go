@@ -96,7 +96,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		"BUILD":           string(BUILD),
 		"projects":        projects,
 		"userid":          userid,
-		"recent":          true,
+		"projectPage":     map[string]bool{"recent": true},
 		"title":           "Recent Projects",
 		"keywords":        "recent projects, latest projects, new projects",
 		"newcomer":        !project.HasList(userid),
@@ -125,7 +125,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		"BUILD":           string(BUILD),
 		"projects":        projects,
 		"userid":          userid,
-		"mine":            true,
+		"projectPage":     map[string]bool{"mine": true},
 		"title":           "My Projects",
 		"keywords":        "my projects, add projects",
 		"newcomer":        !project.HasList(userid),
@@ -285,7 +285,7 @@ func projectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session)
 		"BUILD":           string(BUILD),
 		"project":         p,
 		"userid":          userid,
-		"detail":          true,
+		"projectPage":     map[string]bool{"detail": true},
 		"title":           p.Name,
 		"keywords":        "project detail",
 		"myProjectsCount": project.ListCount(userid),
@@ -295,6 +295,31 @@ func projectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session)
 	err = templates.ExecuteTemplate(w, "project.html", data)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func pageHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
+	vars := mux.Vars(r)
+	page := vars["page"]
+
+	switch page {
+	case "about", "privacy":
+
+		data := map[string]interface{}{
+			"BUILD":    string(BUILD),
+			"page":     map[string]bool{page: true},
+			"title":    page,
+			"keywords": page,
+		}
+
+		err := templates.ExecuteTemplate(w, page+".html", data)
+		if err != nil {
+			return err
+		}
+	default:
+		return &handlerError{Err: fmt.Errorf("Page %q couldn't be found", page), Message: "Not Found", Code: http.StatusNotFound}
 	}
 
 	return nil

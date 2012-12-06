@@ -1,19 +1,26 @@
 {{define "header"}}
     <header class="splst-unit">
+        <ul class="top-navbar pull-right">
+            <li><a href="/"{{if .page}}{{else}} class="active"{{end}}><b>HOME</b></a></li>
+            <li><span class="divider">/</span><a href="/about"{{if .page.about}} class="active"{{end}}><b>ABOUT</b></a></li>
+            <li><span class="divider">/</span><a href="/privacy"{{if .page.privacy}} class="active"{{end}}><b>PRIVACY</b></a></li>
+        </ul>
         <hgroup>
-            <h1><a class="splst" href="/">Splst</a></h1>
+            <h1><a class="splst" href="/">SPLST</a></h1>
             <p>&nbsp;<strong>S</strong>ide <strong>P</strong>rojects' <strong>List</strong></p>
         </hgroup>
     </header>
+    {{if .projectPage}}
     <ul class="splst-navbar">
-        <li><a href="/recent"{{with .recent}} class="active"{{end}}>Recent Projects</a></li>
+        <li><a href="/recent"{{if .projectPage.recent}} class="active"{{end}}>Recent Projects</a></li>
         <li>
-            <a href="/mine"{{with .mine}} class="active"{{end}}>
+            <a href="/mine"{{if .projectPage.mine}} class="active"{{end}}>
                 My Projects<span id="my-projects-count" class="label"><small>{{.myProjectsCount}}</small></span>
                 <span id="jobs-count" class="label label-important" {{if .jobsCount}}{{else}}style="display:none;"{{end}}><small>{{.jobsCount}}</small></span>
             </a>
         </li>
-        {{if .detail}}<li><a href="/project/{{.project.Id}}" class="active">Project Detail</a></li>{{end}}
+        {{if .projectPage.detail}}<li><a href="/project/{{.project.Id}}" class="active">Project Detail</a></li>{{end}}
         <li class="pull-right upload"><b><a id="add-project-link" class="add-project btn btn-small btn-success" href="#">Submit +</a></b></li>
     </ul>
+    {{end}}
 {{end}}

@@ -323,7 +323,7 @@ func pageHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		data := map[string]interface{}{
 			"BUILD":    string(BUILD),
 			"page":     map[string]bool{page: true},
-			"title":    page,
+			"title":    strings.Title(page),
 			"keywords": page,
 		}
 

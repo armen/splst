@@ -13,7 +13,7 @@
     color: @heroUnitHeadingColor;
     letter-spacing: 3px;
   }
-  p {
+  p.splst {
     font-size: 11px;
     color: @heroUnitLeadColor;
     margin: 0;
@@ -72,7 +72,7 @@
     }
 }
 .top-navbar {
-    font-size: 9px;
+    font-size: 10px;
     list-style: none;
     margin: 0 25px 0 0;
     border-bottom: 1px solid #efefef;
@@ -81,7 +81,7 @@
       .ie7-inline-block();
     }
     .divider {
-      color: #ccc;
+      color: #333333;
       margin: 0 5px;
     }
     .active {
@@ -92,11 +92,11 @@
       color: #cc0000;
     }
     li > a {
-      color: #777777;
-      padding: 0 0 5px 0;
+      color: #888888;
+      padding: 0 0 4px 0;
     }
     li > a:hover {
-      color: #333333;
+      color: #000000;
     }
 }
 #projects {
@@ -145,4 +145,11 @@ p.description {
     h3 {
         border-bottom: 1px solid #efefef;
     }
+}
+.icon-separator {
+    border-right: 1px solid @white;
+    padding-right: 8px;
+}
+#signin {
+    color: @linkColor;
 }

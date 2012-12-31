@@ -117,6 +117,8 @@ func main() {
 	r.Handle("/recent", splstHandler(homeHandler)).Methods("GET")
 	r.Handle("/mine", splstHandler(mineHandler)).Methods("GET")
 	r.Handle("/url-info", splstHandler(fetchURLInfoHandler)).Methods("GET")
+	r.Handle("/signin", splstHandler(signinHandler)).Methods("GET")
+	r.Handle("/google-signin", splstHandler(googleSigninHandler)).Methods("POST")
 	r.Handle("/{page}", splstHandler(pageHandler)).Methods("GET")
 	r.Handle("/project", splstHandler(addProjectHandler)).Methods("POST")
 	r.Handle("/project/{pid}", splstHandler(deleteProjectHandler)).Methods("DELETE")

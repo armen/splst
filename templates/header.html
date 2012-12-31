@@ -1,13 +1,14 @@
 {{define "header"}}
     <header class="splst-unit">
         <ul class="top-navbar pull-right">
-            <li><a href="/"{{if .page}}{{else}} class="active"{{end}}><b>HOME</b></a></li>
-            <li><span class="divider">/</span><a href="/about"{{if .page.about}} class="active"{{end}}><b>ABOUT</b></a></li>
+            <li><a id="signin" href="#"{{if .page.signin}} class="active"{{end}}><b>SIGNIN & SINGUP</b></a></li>
+            <li><span class="divider">//</span><a href="/about"{{if .page.about}} class="active"{{end}}><b>ABOUT</b></a></li>
             <li><span class="divider">/</span><a href="/privacy"{{if .page.privacy}} class="active"{{end}}><b>PRIVACY</b></a></li>
+        <li><span class="divider">/</span><a href="/"{{if .page}}{{else}} class="active"{{end}}><b>HOME</b></a></li>
         </ul>
         <hgroup>
             <h1><a class="splst" href="/">SPLST</a></h1>
-            <p>&nbsp;<strong>S</strong>ide <strong>P</strong>rojects' <strong>List</strong></p>
+            <p class="splst">&nbsp;<strong>S</strong>ide <strong>P</strong>rojects' <strong>List</strong></p>
         </hgroup>
     </header>
     {{if .projectPage}}

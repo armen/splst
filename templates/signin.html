@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    {{template "head" .}}
+    <body>
+        <div class="container">
+            <div class="row">
+                {{template "header" .}}
+            </div>
+            <div class="row content">
+                <h3>Signin & Signup</h3>
+                <form action="/google-signin" method="POST">
+                    <div class="controls">
+                        <button type="submit" class="btn btn-google btn-small">
+                              <i class="icon-google-plus icon-large icon-separator"></i>&nbsp;&nbsp;Signin with Google
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {{template "scripts"}}
+    </body>
+</html>

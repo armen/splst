@@ -18,7 +18,7 @@ func pageHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 
 		data := map[string]interface{}{
 			"BUILD":    string(BUILD),
-			"page":     map[string]bool{page: true},
+			"page":     map[string]bool{page: true}, // Select the page in the top navbar
 			"title":    strings.Title(page),
 			"keywords": page,
 		}

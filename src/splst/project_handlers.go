@@ -162,13 +162,13 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 	log.Println("armen", projectFavicon)
 
 	if len(projectName) == 0 {
-		errMessage["name"] = "Project name is requird"
-		return &handlerError{Err: errors.New("Project name is requird"), Message: errMessage, Code: http.StatusBadRequest}
+		errMessage["name"] = "Project name is required"
+		return &handlerError{Err: errors.New("Project name is required"), Message: errMessage, Code: http.StatusBadRequest}
 	}
 
 	if len(projectUrl) == 0 {
-		errMessage["url"] = "Project URL is requird"
-		return &handlerError{Err: errors.New("Project URL is requird"), Message: errMessage, Code: http.StatusBadRequest}
+		errMessage["url"] = "Project URL is required"
+		return &handlerError{Err: errors.New("Project URL is required"), Message: errMessage, Code: http.StatusBadRequest}
 	}
 
 	_, err := url.ParseRequestURI(projectUrl)

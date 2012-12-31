@@ -177,6 +177,12 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 		return &handlerError{Err: err, Message: errMessage, Code: http.StatusBadRequest}
 	}
 
+	_, err = url.ParseRequestURI(projectRepository)
+	if err != nil && projectRepository != "" {
+		errMessage["code-repo"] = fmt.Sprintf("%q is not a fully qualified URL", projectRepository)
+		return &handlerError{Err: err, Message: errMessage, Code: http.StatusBadRequest}
+	}
+
 	go func() {
 		p := &project.Project{Name: projectName, URL: projectUrl, OwnerId: userid, Description: projectDescription, RepositoryURL: projectRepository, Favicon: projectFavicon}
 		err := p.Save()

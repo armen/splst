@@ -157,9 +157,8 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 	projectDescription := strings.TrimSpace(r.FormValue("description"))
 	projectRepository := strings.TrimSpace(r.FormValue("code-repo"))
 	projectFavicon := strings.TrimSpace(r.FormValue("favicon"))
+	projectTags := strings.Split(r.FormValue("tags"), ",")
 	userid := s.Values["userid"].(string)
-
-	log.Println("armen", projectFavicon)
 
 	if len(projectName) == 0 {
 		errMessage["name"] = "Project name is required"
@@ -184,7 +183,7 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 	}
 
 	go func() {
-		p := &project.Project{Name: projectName, URL: projectUrl, OwnerId: userid, Description: projectDescription, RepositoryURL: projectRepository, Favicon: projectFavicon}
+		p := &project.Project{Name: projectName, URL: projectUrl, OwnerId: userid, Description: projectDescription, RepositoryURL: projectRepository, Favicon: projectFavicon, Tags: projectTags}
 		err := p.Save()
 		if err != nil {
 			log.Printf("Error in saving project %q by user %q - %s", p.Id, p.OwnerId, err)

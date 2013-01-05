@@ -37,6 +37,14 @@
                 <span class="help-inline">Must be a fully qualified URL that includes <b>http://</b> or <b>https://</b></span>
             </div>
         </div>
+        <div id="tags-group" class="second-stage control-group" style="display:none;">
+            <label class="control-label" for="project-tags">Tags</label>
+            <div class="controls">
+                <input type="text" name="project-tags" placeholder="Tags" class="tagManager">
+                <span class="help-inline">Use comma or enter to separate tags</span>
+                <div class="tags"></div>
+            </div>
+        </div>
         <div class="controls">
             <input type="hidden" name="favicon" id="favicon">
             <button type="button" class="btn btn-success" id="fetch">Fetch</button>

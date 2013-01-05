@@ -1,5 +1,7 @@
 $(function() {
 
+    var tagManager = $(".tagManager").tagsManager({tagsContainer: '.tags', hiddenTagListName: 'tags'});
+
     $('.closeit').click(function() {
         $(this).parent().fadeOut("fast");
     });
@@ -48,7 +50,7 @@ $(function() {
             $('#fetch').removeAttr("disabled");
 
             url = $('#url').val();
-            $("#add-project").find('input:text, textarea').val('');
+            $("#add-project").find('input:text, input:hidden, textarea').val('');
             $('#url').removeAttr("disabled").val(url);
 
             group = $('#url-group').addClass("error");
@@ -89,7 +91,7 @@ $(function() {
                 $('#fetch').removeAttr("disabled");
 
                 url = $('#url').val();
-                $("#add-project").find('input:text, textarea').val('');
+                $("#add-project").find('input:text, input:hidden, textarea').val('');
                 $('#url').removeAttr("disabled").val(url);
 
                 $.each(result, function(field, value) {
@@ -103,6 +105,9 @@ $(function() {
                 $('#close').hide();
                 $('#add').show();
                 $('#clear').show();
+                $('.tags').empty();
+                tagManager.empty();
+                tagManager = $(".tagManager").tagsManager({tagsContainer: '.tags', hiddenTagListName: 'tags'});
 
                 $('button[type="submit"]', $("#add-project")).removeAttr("disabled");
 
@@ -120,7 +125,7 @@ $(function() {
             // We need to clear text input
             // $("#add-form").find('input:text, input:password, input:file, select, textarea').val('');
             // $("#add-form").find('input:radio, input:checkbox').removeAttr('checked').removeAttr('selected');
-            $("#add-project").find('input:text, textarea').val('');
+            $("#add-project").find('input:text, input:hidden, textarea').val('');
             $('.first-stage').show();
             $('.second-stage').hide();
             $('button[type="submit"]', $("#add-project")).removeAttr("disabled");
@@ -130,6 +135,9 @@ $(function() {
             $('#close').show();
             $('#add').hide();
             $('#clear').hide();
+            $('.tags').empty();
+            tagManager.empty();
+            tagManager = $(".tagManager").tagsManager({tagsContainer: '.tags', hiddenTagListName: 'tags'});
         }, 500);
     }
 
@@ -261,7 +269,6 @@ $(function() {
             return "You have "+count+" jobs in the queue";
         }
     }});
-
 
     $('#signin').popover({
         html: true,

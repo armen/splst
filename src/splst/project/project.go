@@ -17,6 +17,7 @@ import (
 	"os/exec"
 	"path"
 	"splst/utils"
+	"strings"
 	"time"
 )
 
@@ -44,6 +45,7 @@ type Project struct {
 	RepositoryURL string
 	Favicon       string
 	Thumb         bool
+	Tags          []string
 }
 
 func (p *Project) save() error {
@@ -87,6 +89,11 @@ func (p *Project) save() error {
 	_, err = c.Do("LPUSH", "recent-projects", p.Id)
 	if err != nil {
 		return err
+	}
+
+	for _, tag := range p.Tags {
+		tag = strings.ToLower(strings.TrimSpace(tag))
+		c.Do("SADD", "t:"+tag, p.Id)
 	}
 
 	log.Printf("Saved project %q, %q", p.Id, p.URL)
@@ -306,6 +313,11 @@ func (p *Project) Delete() error {
 	_, err = c.Do("LREM", "recent-projects", 1, p.Id)
 	if err != nil {
 		return err
+	}
+
+	for _, tag := range p.Tags {
+		tag = strings.ToLower(strings.TrimSpace(tag))
+		c.Do("SREM", "t:"+tag, p.Id)
 	}
 
 	key := "p:" + p.Id

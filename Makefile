@@ -15,6 +15,7 @@ uglify:
 	uglifyjs static/js/splst.js > static/js/min/splst.min.js
 	uglifyjs static/js/bootstrap-tooltip.js > static/js/min/bootstrap-tooltip.min.js
 	uglifyjs static/js/bootstrap-popover.js > static/js/min/bootstrap-popover.min.js
+	uglifyjs static/js/bootstrap-tagmanager.js > static/js/min/bootstrap-tagmanager.min.js
 
 gofmt-hook:
 	wget -q https://raw.github.com/edsrzf/gofmt-git-hook/master/fmt-check -O /tmp/pre-commit

@@ -25,6 +25,8 @@ var (
 	config         conf.ConfigFile
 	docRoot        string
 	appRoot        string
+	splstHostname  string
+	splstRedisPool *redis.Pool
 	BUILD          []byte
 	sessionSecrets [][]byte
 	templates      *template.Template
@@ -54,6 +56,11 @@ func main() {
 	appRoot, err := config.GetString("default", "app-root")
 	if err != nil {
 		appRoot = os.Getenv("PWD")
+	}
+
+	splstHostname, err = config.GetString("default", "hostname")
+	if err != nil {
+		splstHostname = "localhost:8080"
 	}
 
 	host, err := config.GetString("default", "host")
@@ -92,7 +99,7 @@ func main() {
 	}
 	BUILD = bytes.TrimSpace(BUILD)
 
-	redisPool := &redis.Pool{
+	splstRedisPool = &redis.Pool{
 		MaxIdle:     redisMaxIdle,
 		IdleTimeout: time.Duration(redisIdleTimeout) * time.Second,
 		Dial: func() (redis.Conn, error) {
@@ -110,7 +117,7 @@ func main() {
 	store = sessions.NewCookieStore(bytes.Fields([]byte(secrets))...)
 	templates = template.Must(template.ParseGlob(path.Join(docRoot, "*.html")))
 
-	project.Init(redisPool, appRoot, saveConcurrencySize)
+	project.Init(splstRedisPool, appRoot, saveConcurrencySize)
 
 	r := mux.NewRouter()
 	r.Handle("/", splstHandler(homeHandler)).Methods("GET")
@@ -119,6 +126,7 @@ func main() {
 	r.Handle("/url-info", splstHandler(fetchURLInfoHandler)).Methods("GET")
 	r.Handle("/signin", splstHandler(signinHandler)).Methods("GET")
 	r.Handle("/google-signin", splstHandler(googleSigninHandler)).Methods("POST")
+	r.Handle("/google-callback", splstHandler(googleCallbackHandler)).Methods("GET")
 	r.Handle("/{page}", splstHandler(pageHandler)).Methods("GET")
 	r.Handle("/project", splstHandler(addProjectHandler)).Methods("POST")
 	r.Handle("/project/{pid}", splstHandler(deleteProjectHandler)).Methods("DELETE")

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    {{template "head" .}}
+    <body>
+        <div class="container">
+            <div class="row">
+                {{template "header" .}}
+            </div>
+            <div class="row content">
+                <div class="alert alert-error">
+                    <h4>Oops!</h4>
+                    <p>{{.error}}</p>
+                </div>
+            </div>
+        </div>
+        {{template "scripts"}}
+    </body>
+</html>

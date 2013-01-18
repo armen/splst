@@ -1,40 +1,20 @@
 package main
 
 import (
-	"code.google.com/p/goconf/conf"
-	"github.com/garyburd/redigo/redis"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 
-	"bytes"
 	"flag"
 	"fmt"
-	"html/template"
-	"io/ioutil"
-	"log"
-	"net"
+	"gapp"
 	"net/http"
 	"os"
-	"path"
-	"runtime"
 	"splst/project"
-	"time"
 )
 
 var (
-	config         conf.ConfigFile
-	docRoot        string
-	appRoot        string
-	splstHostname  string
-	splstRedisPool *redis.Pool
-	BUILD          []byte
-	sessionSecrets [][]byte
-	templates      *template.Template
-	store          *sessions.CookieStore
-
-	flagConf = flag.String("conf", "conf/splst.ini", "Configuration file")
+	flagConf = flag.String("conf", "conf/app.ini", "Configuration file")
 	Usage    = func() {
-		fmt.Fprintf(os.Stderr, "Usage of splst:\n\t--conf Configuration file (e.g --conf conf/splst.ini)\n")
+		fmt.Fprintf(os.Stderr, "Usage:\n\t--conf Configuration file (e.g --conf conf/app.ini)\n")
 	}
 )
 
@@ -43,95 +23,28 @@ func main() {
 	flag.Usage = Usage
 	flag.Parse()
 
-	config, err := conf.ReadConfigFile(*flagConf)
-	if err != nil {
-		log.Fatal(err)
-	}
+	gapp.Init(*flagConf)
 
-	goMaxProcs, err := config.GetInt("default", "go-max-procs")
-	if err != nil {
-		goMaxProcs = 3
-	}
-
-	appRoot, err := config.GetString("default", "app-root")
-	if err != nil {
-		appRoot = os.Getenv("PWD")
-	}
-
-	splstHostname, err = config.GetString("default", "hostname")
-	if err != nil {
-		splstHostname = "localhost:8080"
-	}
-
-	host, err := config.GetString("default", "host")
-	if err != nil {
-		host = "localhost"
-	}
-
-	port, err := config.GetString("default", "port")
-	if err != nil {
-		port = "9980"
-	}
-
-	saveConcurrencySize, err := config.GetInt("default", "save-concurrency-size")
+	saveConcurrencySize, err := gapp.Config.GetInt("default", "save-concurrency-size")
 	if err != nil {
 		saveConcurrencySize = 2
 	}
 
-	secrets, err := config.GetString("session", "secrets")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	redisMaxIdle, err := config.GetInt("redis", "max-idle")
-	if err != nil {
-		redisMaxIdle = 20
-	}
-
-	redisIdleTimeout, err := config.GetInt("redis", "idle-timeout")
-	if err != nil {
-		redisIdleTimeout = 240
-	}
-
-	BUILD, err = ioutil.ReadFile(path.Join(appRoot, "conf", "BUILD"))
-	if err != nil {
-		log.Fatalf("%s - Please make sure BUILD file is created with \"make styles\"", err)
-	}
-	BUILD = bytes.TrimSpace(BUILD)
-
-	splstRedisPool = &redis.Pool{
-		MaxIdle:     redisMaxIdle,
-		IdleTimeout: time.Duration(redisIdleTimeout) * time.Second,
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", ":6379")
-			if err != nil {
-				return nil, err
-			}
-			return c, err
-		},
-	}
-
-	runtime.GOMAXPROCS(goMaxProcs)
-	docRoot = path.Join(appRoot, "templates")
-	addr := net.JoinHostPort(host, port)
-	store = sessions.NewCookieStore(bytes.Fields([]byte(secrets))...)
-	templates = template.Must(template.ParseGlob(path.Join(docRoot, "*.html")))
-
-	project.Init(splstRedisPool, appRoot, saveConcurrencySize)
+	project.Init(gapp.RedisPool, gapp.AppRoot, saveConcurrencySize)
 
 	r := mux.NewRouter()
-	r.Handle("/", splstHandler(homeHandler)).Methods("GET")
-	r.Handle("/recent", splstHandler(homeHandler)).Methods("GET")
-	r.Handle("/mine", splstHandler(mineHandler)).Methods("GET")
-	r.Handle("/url-info", splstHandler(fetchURLInfoHandler)).Methods("GET")
-	r.Handle("/signin", splstHandler(signinHandler)).Methods("GET")
-	r.Handle("/google-signin", splstHandler(googleSigninHandler)).Methods("POST")
-	r.Handle("/google-callback", splstHandler(googleCallbackHandler)).Methods("GET")
-	r.Handle("/{page}", splstHandler(pageHandler)).Methods("GET")
-	r.Handle("/project", splstHandler(addProjectHandler)).Methods("POST")
-	r.Handle("/project/{pid}", splstHandler(deleteProjectHandler)).Methods("DELETE")
-	r.Handle("/project/{pid}", splstHandler(projectHandler)).Methods("GET")
+	r.Handle("/", gapp.Handler(homeHandler)).Methods("GET")
+	r.Handle("/recent", gapp.Handler(homeHandler)).Methods("GET")
+	r.Handle("/mine", gapp.Handler(mineHandler)).Methods("GET")
+	r.Handle("/url-info", gapp.Handler(fetchURLInfoHandler)).Methods("GET")
+	r.Handle("/project", gapp.Handler(addProjectHandler)).Methods("POST")
+	r.Handle("/project/{pid}", gapp.Handler(deleteProjectHandler)).Methods("DELETE")
+	r.Handle("/project/{pid}", gapp.Handler(projectHandler)).Methods("GET")
+	r.Handle("/signin", gapp.SigninHandler).Methods("GET")
+	r.Handle("/google-signin", gapp.GoogleSigninHandler).Methods("POST")
+	r.Handle("/google-callback", gapp.GoogleCallbackHandler).Methods("GET")
+	r.Handle("/{page}", gapp.PageHandler).Methods("GET")
 
 	http.Handle("/", r)
-	http.ListenAndServe(addr, nil)
+	http.ListenAndServe(gapp.Address, nil)
 }

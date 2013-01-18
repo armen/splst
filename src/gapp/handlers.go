@@ -1,4 +1,4 @@
-package main
+package gapp
 
 import (
 	"github.com/gorilla/sessions"
@@ -10,19 +10,19 @@ import (
 	"strings"
 )
 
-type handlerError struct {
+type HandlerError struct {
 	Err     error
 	Message interface{}
 	Code    int
 }
 
-func (e *handlerError) Error() string {
+func (e *HandlerError) Error() string {
 	return e.Err.Error()
 }
 
-type splstHandler func(http.ResponseWriter, *http.Request, *sessions.Session) error
+type Handler func(http.ResponseWriter, *http.Request, *sessions.Session) error
 
-func (f splstHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (f Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	defer func() {
 		if err := recover(); err != nil {
@@ -37,13 +37,13 @@ func (f splstHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Print(e)
 	}
 
-	var err *handlerError
+	var err *HandlerError
 
 	if e := f(w, r, s); e != nil {
 
 		// If it's a regular error convert it to *handleError
-		if herr, ok := e.(*handlerError); !ok {
-			err = &handlerError{Err: e, Message: "Internal Server Error", Code: http.StatusInternalServerError}
+		if herr, ok := e.(*HandlerError); !ok {
+			err = &HandlerError{Err: e, Message: "Internal Server Error", Code: http.StatusInternalServerError}
 		} else {
 			err = herr
 		}
@@ -71,12 +71,12 @@ func (f splstHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			message, _ = json.Marshal(err.Message)
 		default:
 			data := map[string]interface{}{
-				"BUILD":    string(BUILD),
+				"BUILD":    BuildId,
 				"title":    http.StatusText(err.Code),
 				"keywords": strconv.Itoa(err.Code) + ", " + http.StatusText(err.Code),
 				"error":    err.Message,
 			}
-			err := templates.ExecuteTemplate(w, "error.html", data)
+			err := Templates.ExecuteTemplate(w, "error.html", data)
 			if err == nil {
 				return
 			}

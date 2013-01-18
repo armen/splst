@@ -1,4 +1,4 @@
-package main
+package gapp
 
 import (
 	"github.com/gorilla/mux"
@@ -6,6 +6,7 @@ import (
 
 	"fmt"
 	"net/http"
+	"path"
 	"strings"
 )
 
@@ -17,19 +18,19 @@ func pageHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 	case "about", "privacy", "feedback":
 
 		data := map[string]interface{}{
-			"BUILD":    string(BUILD),
+			"BUILD":    BuildId,
 			"page":     map[string]bool{page: true}, // Select the page in the top navbar
 			"title":    strings.Title(page),
 			"keywords": page,
 		}
 
-		err := templates.ExecuteTemplate(w, page+".html", data)
+		err := Templates.ExecuteTemplate(w, path.Join(page+".html"), data)
 		if err != nil {
 			return err
 		}
 	default:
 		err := fmt.Errorf("Page %q could not be found!", page)
-		return &handlerError{Err: err, Message: err.Error(), Code: http.StatusNotFound}
+		return &HandlerError{Err: err, Message: err.Error(), Code: http.StatusNotFound}
 	}
 
 	return nil

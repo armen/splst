@@ -1,15 +1,16 @@
-package main
+package gapp
 
 import (
 	"github.com/gorilla/sessions"
 
+	"gapp/utils"
 	"net/http"
-	"splst/utils"
 )
 
 func genSession(w http.ResponseWriter, r *http.Request) (*sessions.Session, error) {
-	// Create a splst session and store it in cookie so that we can recognize the user when he/she gets back
-	s, err := store.Get(r, "splst")
+	// Create a session and store it in cookie so that we can recognize the user when he/she gets back
+	// TODO: read session/cookie name from config
+	s, err := sessionStore.Get(r, "gapp")
 	if err != nil {
 		return nil, err
 	}

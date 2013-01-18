@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"gapp"
 	"io"
 	"log"
 	"net/http"
@@ -27,7 +28,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 	}
 
 	data := map[string]interface{}{
-		"BUILD":           string(BUILD),
+		"BUILD":           gapp.BuildId,
 		"projects":        projects,
 		"userid":          userid,
 		"projectPage":     map[string]bool{"recent": true},
@@ -38,7 +39,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		"jobsCount":       project.JobsCount(userid),
 	}
 
-	err = templates.ExecuteTemplate(w, "home.html", data)
+	err = gapp.Templates.ExecuteTemplate(w, "home.html", data)
 	if err != nil {
 		return err
 	}
@@ -56,7 +57,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 	}
 
 	data := map[string]interface{}{
-		"BUILD":           string(BUILD),
+		"BUILD":           gapp.BuildId,
 		"projects":        projects,
 		"userid":          userid,
 		"projectPage":     map[string]bool{"mine": true},
@@ -67,7 +68,7 @@ func mineHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		"jobsCount":       project.JobsCount(userid),
 	}
 
-	err = templates.ExecuteTemplate(w, "home.html", data)
+	err = gapp.Templates.ExecuteTemplate(w, "home.html", data)
 	if err != nil {
 		return err
 	}
@@ -162,24 +163,24 @@ func addProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Sessi
 
 	if len(projectName) == 0 {
 		errMessage["name"] = "Project name is required"
-		return &handlerError{Err: errors.New("Project name is required"), Message: errMessage, Code: http.StatusBadRequest}
+		return &gapp.HandlerError{Err: errors.New("Project name is required"), Message: errMessage, Code: http.StatusBadRequest}
 	}
 
 	if len(projectUrl) == 0 {
 		errMessage["url"] = "Project URL is required"
-		return &handlerError{Err: errors.New("Project URL is required"), Message: errMessage, Code: http.StatusBadRequest}
+		return &gapp.HandlerError{Err: errors.New("Project URL is required"), Message: errMessage, Code: http.StatusBadRequest}
 	}
 
 	_, err := url.ParseRequestURI(projectUrl)
 	if err != nil {
 		errMessage["url"] = fmt.Sprintf("%q is not a fully qualified URL", projectUrl)
-		return &handlerError{Err: err, Message: errMessage, Code: http.StatusBadRequest}
+		return &gapp.HandlerError{Err: err, Message: errMessage, Code: http.StatusBadRequest}
 	}
 
 	_, err = url.ParseRequestURI(projectRepository)
 	if err != nil && projectRepository != "" {
 		errMessage["code-repo"] = fmt.Sprintf("%q is not a fully qualified URL", projectRepository)
-		return &handlerError{Err: err, Message: errMessage, Code: http.StatusBadRequest}
+		return &gapp.HandlerError{Err: err, Message: errMessage, Code: http.StatusBadRequest}
 	}
 
 	go func() {
@@ -200,14 +201,14 @@ func deleteProjectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Se
 
 	p, err := project.Fetch(pid)
 	if err != nil {
-		return &handlerError{Err: err, Message: "Not Found", Code: http.StatusNotFound}
+		return &gapp.HandlerError{Err: err, Message: "Not Found", Code: http.StatusNotFound}
 	}
 
 	if p.Mine(userid) {
 		return p.Delete()
 	}
 
-	return &handlerError{Err: errors.New("Permission Denied"), Message: "Permission Denied", Code: http.StatusForbidden}
+	return &gapp.HandlerError{Err: errors.New("Permission Denied"), Message: "Permission Denied", Code: http.StatusForbidden}
 }
 
 func projectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
@@ -217,11 +218,11 @@ func projectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session)
 
 	p, err := project.Fetch(pid)
 	if err != nil {
-		return &handlerError{Err: err, Message: "Not Found", Code: http.StatusNotFound}
+		return &gapp.HandlerError{Err: err, Message: "Not Found", Code: http.StatusNotFound}
 	}
 
 	data := map[string]interface{}{
-		"BUILD":           string(BUILD),
+		"BUILD":           gapp.BuildId,
 		"project":         p,
 		"userid":          userid,
 		"projectPage":     map[string]bool{"detail": true},
@@ -231,7 +232,7 @@ func projectHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session)
 		"jobsCount":       project.JobsCount(userid),
 	}
 
-	err = templates.ExecuteTemplate(w, "project.html", data)
+	err = gapp.Templates.ExecuteTemplate(w, "project.html", data)
 	if err != nil {
 		return err
 	}

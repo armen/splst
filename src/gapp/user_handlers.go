@@ -1,4 +1,4 @@
-package main
+package gapp
 
 import (
 	"code.google.com/p/goauth2/oauth"
@@ -40,13 +40,13 @@ const (
 func signinHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
 
 	data := map[string]interface{}{
-		"BUILD":    string(BUILD),
+		"BUILD":    BuildId,
 		"page":     map[string]bool{"signin": true}, // Select signin in the top navbar
 		"title":    "Signin & Signup",
 		"keywords": "signin, signup, loging, register",
 	}
 
-	err := templates.ExecuteTemplate(w, "signin.html", data)
+	err := Templates.ExecuteTemplate(w, "signin.html", data)
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func signinHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) 
 func googleSigninHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) error {
 
 	// Replace %s with hostname
-	oauthCfg.RedirectURL = fmt.Sprintf(redirectURL, strings.TrimSpace(splstHostname))
+	oauthCfg.RedirectURL = fmt.Sprintf(redirectURL, strings.TrimSpace(Hostname))
 
 	// Get the Google URL which shows the Authentication page to the user
 	url := oauthCfg.AuthCodeURL("")
@@ -80,14 +80,14 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request, s *sessions.S
 	// Exchange the received code for a token
 	t.Exchange(code)
 
-	// Now get user data based on the Transport which has the token
+	// Now get user's data based on the Transport which has the token
 	resp, err := t.Client().Get(profileInfoURL)
 	if err != nil {
 		return err
 	}
 	defer r.Body.Close()
 
-	c := splstRedisPool.Get()
+	c := RedisPool.Get()
 	defer c.Close()
 
 	var user User

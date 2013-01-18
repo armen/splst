@@ -12,6 +12,8 @@ styles:
 
 uglify:
 	uglifyjs static/js/jquery-1.7.2.js > static/js/min/jquery-1.7.2.min.js
+	uglifyjs static/js/gapp.js > static/js/min/gapp.min.js
+	uglifyjs static/js/bootstrap-popover.js > static/js/min/bootstrap-popover.min.js
 
 gofmt-hook:
 	wget -q https://raw.github.com/edsrzf/gofmt-git-hook/master/fmt-check -O /tmp/pre-commit

@@ -1,5 +1,5 @@
 {{define "header"}}
-    <header class="splst-unit">
+    <header class="header">
         <ul class="top-navbar pull-right">
             <li><a id="signin" href="#"{{if .page.signin}} class="active"{{end}}><b>SIGNIN & SINGUP</b></a></li>
             <li><span class="divider">//</span><a href="/about"{{if .page.about}} class="active"{{end}}><b>ABOUT</b></a></li>
@@ -7,8 +7,8 @@
         <li><span class="divider">/</span><a href="/"{{if .page}}{{else}} class="active"{{end}}><b>HOME</b></a></li>
         </ul>
         <hgroup>
-            <h1><a class="splst" href="/">SPLST</a></h1>
-            <p class="splst">&nbsp;<strong>S</strong>ide <strong>P</strong>rojects' <strong>List</strong></p>
+            <h1><a class="gapp" href="/">SPLST</a></h1>
+            <p class="gapp">&nbsp;<strong>S</strong>ide <strong>P</strong>rojects' <strong>List</strong></p>
         </hgroup>
     </header>
     {{if .projectPage}}

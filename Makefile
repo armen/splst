@@ -8,6 +8,7 @@ styles:
 	git clean -fX static/css
 	lessc -x --yui-compress less/bootstrap.less static/css/bootstrap.${BUILD}.css
 	lessc -x --yui-compress less/responsive.less static/css/bootstrap-responsive.${BUILD}.css
+	lessc -x --yui-compress less/gapp.less static/css/gapp.${BUILD}.css
 	lessc -x --yui-compress less/splst.less static/css/splst.${BUILD}.css
 
 uglify:

@@ -96,7 +96,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request, s *sessions.Session) er
 		"keywords": "home",
 	}
 
-    err := Templates.ExecuteTemplate(w, "home.html", data)
+	err := Templates.ExecuteTemplate(w, "home.html", data)
 	if err != nil {
 		return err
 	}
